@@ -5,6 +5,9 @@ namespace TicketStationMVC.ViewModels.Events
 {
     public class EventCreateVM
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required]
         [MinLength(2)]
         [MaxLength(255)]

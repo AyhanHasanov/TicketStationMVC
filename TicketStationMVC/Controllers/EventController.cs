@@ -11,27 +11,42 @@ using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Services.ServiceInterfaces;
 using TicketStationMVC.ViewModels.Events;
+using TicketStationMVC.ViewModels.User;
 
 namespace TicketStationMVC.Controllers
 {
-    public class EventsController : Controller
+    public class EventController : Controller
     {
         private readonly IEventService _eventService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public EventsController(IEventService eventService, IHttpContextAccessor httpContextAccessor)
+        public EventController(IEventService eventService, IHttpContextAccessor httpContextAccessor, ApplicationDbContext context, IUserService userService)
         {
             _eventService = eventService;
             _httpContextAccessor = httpContextAccessor;
+            _context = context;
+            _userService = userService;
         }
 
         // GET: Events
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return default;
-            //    var applicationDbContext = _context.Events.Include(@ => @.CreatedBy);
-            //    return View(await applicationDbContext.ToListAsync());
+            var items = await _eventService.GetAllEventsAsync();
+
+            var vmMaps = items.Select(x => new EventViewVM()
+            {
+                Name = x.Name,
+                Price = x.Price,
+                DateOfEvent = x.DateOfEvent,
+                ImageURL = x.ImageURL,
+                Categories = _eventService.GetCategoriesForEventAsync(x.Id).Result
+            });
+
+
+            return View(vmMaps);
         }
 
         [HttpGet]
@@ -61,10 +76,8 @@ namespace TicketStationMVC.Controllers
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Create()
         {
-
-            return default;
-            //ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Email");
-            //return View();
+            ViewData["CategoriesID"] = new SelectList(_context.Set<Category>(), "Id", "Name");
+            return View();
         }
 
         // POST: Events/Create
@@ -74,8 +87,38 @@ namespace TicketStationMVC.Controllers
         [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(EventCreateVM vm)
+        public async Task<IActionResult> Create([FromForm]EventCreateVM vm)
         {
+
+            if (ModelState.IsValid)
+            {
+                if (vm == null)
+                    return BadRequest();
+
+                var user = await _userService.GetUserByEmailAsync((_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value);
+
+                if (user == null)
+                    return BadRequest();
+
+                Event @event = new Event()
+                {
+                    Name = vm.Name,
+                    Description = vm.Description,
+                    Price = vm.Price,
+                    Quantity = vm.Quantity,
+                    DateOfEvent = vm.DateOfEvent,
+                    Status = vm.Status,
+                    EventCategories = vm.EventCategories,
+                    ImageURL = vm.ImageURL,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now,
+                    CreatedById = user.Id
+                };
+
+                await _eventService.CreateAsync(@event);
+                return RedirectToAction(nameof(Index));
+            }
+
             return View();
 
             //if (ModelState.IsValid)

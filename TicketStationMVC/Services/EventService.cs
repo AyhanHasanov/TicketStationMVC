@@ -1,4 +1,6 @@
-﻿using TicketStationMVC.Data.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using TicketStationMVC.Data;
+using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
 using TicketStationMVC.Services.ServiceInterfaces;
 
@@ -6,11 +8,12 @@ namespace TicketStationMVC.Services
 {
     public class EventService : IEventService
     {
+        private readonly ApplicationDbContext _context;
         private readonly IRepository<Event> _eventsRepository;
-
-        public EventService(IRepository<Event> repo)
+        public EventService(IRepository<Event> repo, ApplicationDbContext context)
         {
-            _eventsRepository = repo;
+            _eventsRepository = repo; 
+            _context = context;
         }
         public async Task<Event> CreateAsync(Event @event)
         {
@@ -35,6 +38,16 @@ namespace TicketStationMVC.Services
         public async Task<Event> UpdateAsync(Event @event)
         {
             return await _eventsRepository.UpdateAsync(@event);
+        }
+
+        public async Task<ICollection<string>> GetCategoriesForEventAsync(int eventId)
+        {
+             var categories = await _context.EventCategories
+                .Where(ec => ec.EventId == eventId)
+                .Select(ec => ec.Category.Name) 
+                .ToListAsync();
+
+            return categories;
         }
     }
 }

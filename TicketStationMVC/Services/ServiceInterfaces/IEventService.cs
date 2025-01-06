@@ -9,5 +9,6 @@ namespace TicketStationMVC.Services.ServiceInterfaces
         public Task<Event> CreateAsync(Event @event);
         public Task<Event> UpdateAsync(Event @event);
         public Task<Event> DeleteAsync(int id);
+        public Task<ICollection<string>> GetCategoriesForEventAsync(int eventId);
     }
 }
