@@ -66,7 +66,7 @@ namespace TicketStationMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (_categoryService.GetAllCategoriesAsync().Result.Any(c => c.Name.ToLower().Equals(createVM.Name.ToLower())))
+                if ((await _categoryService.GetAllCategoriesAsync()).Any(c => c.Name.ToLower().Equals(createVM.Name.ToLower())))
                 {
                     ModelState.AddModelError("", "This ctageory already exists!");
                     return View(createVM);
@@ -143,24 +143,32 @@ namespace TicketStationMVC.Controllers
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
-        public ActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View();
+            if (id == null || _context.Categories == null)
+                return NotFound();
+
+            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+
+            if (category == null)
+                return NotFound();
+
+            return View(category);
         }
 
         // POST: CategoryController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
+        [Authorize]
+        [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            if (_context.Categories == null || id == null)
+                return NotFound();
+
+            await _categoryService.DeleteAsync(id.Value);
+            return RedirectToAction(nameof(Index));
+
         }
 
         private bool CategoryExists(int id)

@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TicketStationMVC.Data.Entities;
 
-namespace TicketStationMVC.Data.Entities
+namespace TicketStationMVC.ViewModels.Events
 {
-    public class Event : BaseEntity
+    public class EventCreateVM
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [MinLength(2)]
         [MaxLength(255)]
@@ -28,15 +26,12 @@ namespace TicketStationMVC.Data.Entities
         [Required]
         public DateTime DateOfEvent { get; set; }
 
-        public User? CreatedBy { get; set; }
-
-        public int CreatedById { get; set; }
-
         [Required]
         public bool Status { get; set; } // is active or passed
 
         public string ImageURL { get; set; }
 
-        public virtual ICollection<EventCategories> EventCategories { get; set;}
+        public virtual ICollection<EventCategories> EventCategories { get; set; }
+
     }
 }

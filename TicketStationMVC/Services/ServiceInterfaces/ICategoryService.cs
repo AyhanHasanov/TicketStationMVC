@@ -1,4 +1,5 @@
 ﻿using TicketStationMVC.Data.Entities;
+using TicketStationMVC.ViewModels.Category;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TicketStationMVC.Services.ServiceInterfaces
@@ -10,6 +11,7 @@ namespace TicketStationMVC.Services.ServiceInterfaces
         public Task<Category> CreateAsync(Category category);
         public Task<Category> UpdateAsync(Category category);
         public Task<Category> DeleteAsync(int categoryId);
+
 
     }
 }

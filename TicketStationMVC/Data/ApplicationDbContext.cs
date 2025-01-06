@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.ViewModels.Category;
+using TicketStationMVC.ViewModels.Account;
+using TicketStationMVC.ViewModels.User;
 
 namespace TicketStationMVC.Data
 {
@@ -80,6 +82,12 @@ namespace TicketStationMVC.Data
         {
             Database.EnsureCreated();
         }
-        public DbSet<TicketStationMVC.ViewModels.Category.CategoryVM> CategoryCreateVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.Category.CategoryVM> CategoryCreateVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.Account.AccountDetailsVM> AccountDetailsVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.Account.AccountChangePassVM> AccountChangePassVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.User.UserViewVM> UserViewVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.User.UserDetailsVM> UserDetailsVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.User.UserCreateVM> UserCreateVM { get; set; } = default!;
+        //public DbSet<TicketStationMVC.ViewModels.User.UserEditVM> UserEditVM { get; set; } = default!;
     }
 }

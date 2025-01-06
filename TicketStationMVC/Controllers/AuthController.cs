@@ -7,6 +7,7 @@ using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Data;
 using TicketStationMVC.ViewModels.User;
 using Microsoft.EntityFrameworkCore;
+using TicketStationMVC.Services.ServiceInterfaces;
 
 namespace TicketStationMVC.Controllers
 {
@@ -15,7 +16,7 @@ namespace TicketStationMVC.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ApplicationDbContext context, ILogger<AuthController> logger)
+        public AuthController(ApplicationDbContext context, ILogger<AuthController> logger, IUserService userService)
         {
             _context = context;
             _logger = logger;
@@ -38,10 +39,17 @@ namespace TicketStationMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (await _context.Users.AnyAsync(u => u.Username.Equals(registrationVM.Username) || u.Email.Equals(registrationVM.Email)))
+                if (await _context.Users.AnyAsync(u => u.Username.Equals(registrationVM.Username)))
+                {
+                    //username is taken
+                    ModelState.AddModelError("", "Username is already taken!");
+                    return View(registrationVM);
+                }
+
+                if (await _context.Users.AnyAsync(u => u.Email.Equals(registrationVM.Email)))
                 {
                     //user is already registered
-                    ModelState.AddModelError("", "User is already registered");
+                    ModelState.AddModelError("", "User is already registered with this email!");
                     return View(registrationVM);
                 }
 
@@ -55,8 +63,9 @@ namespace TicketStationMVC.Controllers
                     Password = hashedPass,
                     Name = registrationVM.Name,
                     RegisteredOn = DateTime.UtcNow,
-                    RoleId = 2
-                    //UserRoles = new List<UserRole>()
+                    RoleId = 2,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
                 };
 
                 await _context.Users.AddAsync(user);
@@ -74,6 +83,7 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(UserLoginVM loginVM)
         {
             if (ModelState.IsValid)
@@ -116,7 +126,7 @@ namespace TicketStationMVC.Controllers
                 {
                     AllowRefresh = true,
                     ExpiresUtc = DateTime.UtcNow.AddMinutes(25),
-                    IsPersistent = true, //if the browser is closed the cookie is not deleted it is tored locally
+                    IsPersistent = true, //if the browser is closed the cookie is not deleted it is stored locally
                     IssuedUtc = DateTime.UtcNow
                 };
 
@@ -139,5 +149,6 @@ namespace TicketStationMVC.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Auth");
         }
+
     }
 }
