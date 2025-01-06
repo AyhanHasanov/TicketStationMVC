@@ -3,6 +3,7 @@ using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
 using TicketStationMVC.Services.ServiceInterfaces;
+using TicketStationMVC.ViewModels.User;
 
 namespace TicketStationMVC.Services
 {
@@ -34,8 +35,19 @@ namespace TicketStationMVC.Services
         {
             return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
-        public async Task<User> CreateUser(User user)
+        public async Task<User> CreateUser(UserCreateVM userCreateVM)
         {
+            User user = new User()
+            {
+                Name = userCreateVM.Name,
+                Username = userCreateVM.Username,
+                Email = userCreateVM.Email,
+                RegisteredOn = DateTime.Now,
+                RoleId = userCreateVM.RoleId,
+                Password = BCrypt.Net.BCrypt.HashPassword(userCreateVM.Password),
+                CreatedAt = DateTime.Now,
+                ModifiedAt = DateTime.Now
+            };
             return await _userRepository.CreateAsync(user);
         }
 

@@ -97,19 +97,7 @@ namespace TicketStationMVC.Controllers
                     return View(userCreateVM);
                 }
 
-                User user = new User()
-                {
-                    Name = userCreateVM.Name,
-                    Username = userCreateVM.Username,
-                    Email = userCreateVM.Email,
-                    RegisteredOn = DateTime.Now,
-                    RoleId = userCreateVM.RoleId,
-                    Password = BCrypt.Net.BCrypt.HashPassword(userCreateVM.Password),
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = DateTime.Now
-                };
-
-                await _userService.CreateUser(user);
+                await _userService.CreateUser(userCreateVM);
                 return RedirectToAction(nameof(Index));
             }
             return View();

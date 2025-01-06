@@ -72,13 +72,7 @@ namespace TicketStationMVC.Controllers
                     return View(createVM);
                 }
 
-                Category category = new Category()
-                {
-                    Name = createVM.Name,
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = DateTime.Now
-                };
-                await _categoryService.CreateAsync(category);
+                await _categoryService.CreateAsync(createVM);
                 return RedirectToAction(nameof(Index));
             }
             return View(createVM);
@@ -122,10 +116,7 @@ namespace TicketStationMVC.Controllers
             {
                 try
                 {
-                    Category category = await _categoryService.GetCategoryByIdAsync(id.Value);
-                    category.Name = categoryVM.Name;
-                    category.ModifiedAt = DateTime.Now;
-                    await _categoryService.UpdateAsync(category);
+                    await _categoryService.UpdateAsync(categoryVM);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -168,7 +159,6 @@ namespace TicketStationMVC.Controllers
 
             await _categoryService.DeleteAsync(id.Value);
             return RedirectToAction(nameof(Index));
-
         }
 
         private bool CategoryExists(int id)

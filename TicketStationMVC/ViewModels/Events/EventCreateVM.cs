@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using TicketStationMVC.CustomAttributes;
 using TicketStationMVC.Data.Entities;
 
 namespace TicketStationMVC.ViewModels.Events
@@ -20,10 +23,11 @@ namespace TicketStationMVC.ViewModels.Events
         public string Description { get; set; }
 
         [Required]
-        [DataType(DataType.Currency)]
+        [Range(0, 100000)]
         public decimal Price { get; set; }
 
         [Required]
+        [Range(0, 100000)]
         public int Quantity { get; set; }
 
         [Required]
@@ -32,9 +36,19 @@ namespace TicketStationMVC.ViewModels.Events
         [Required]
         public bool Status { get; set; } // is active or passed
 
-        public string ImageURL { get; set; }
+        public string? ImageURL { get; set; }
 
-        public virtual ICollection<EventCategories> EventCategories { get; set; }
+        [DisplayName("Categories")]
+        [EnsureOneElement(ErrorMessage = "Please select at least one genre!")]
+        public List<int>? CategoryIds { get; set; }
+
+
+        public int CreatedById { get; set; }
+
+        [NotMapped]
+        [DisplayName("Upload file")]
+        public IFormFile? ImageFile { get; set; }
+
 
     }
 }

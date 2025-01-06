@@ -141,10 +141,18 @@ namespace TicketStationMVC.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await LogoutConfirmed();
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost, ActionName("Logout")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> LogoutConfirmed()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Auth");

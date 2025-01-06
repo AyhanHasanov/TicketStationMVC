@@ -3,6 +3,7 @@ using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
 using TicketStationMVC.Services.ServiceInterfaces;
+using TicketStationMVC.ViewModels.Events;
 
 namespace TicketStationMVC.Services
 {
@@ -15,9 +16,31 @@ namespace TicketStationMVC.Services
             _eventsRepository = repo; 
             _context = context;
         }
-        public async Task<Event> CreateAsync(Event @event)
+        public async Task<Event> CreateAsync(EventCreateVM createEventVM)
         {
-            return await _eventsRepository.CreateAsync(@event);
+            ICollection<EventCategories> eventCategories = new List<EventCategories>();
+
+            foreach (var category in createEventVM.CategoryIds)
+            {
+                eventCategories.Add(new EventCategories() { EventId = createEventVM.Id, CategoryId = category });
+            }
+
+            Event @event = new Event()
+            {
+                Name = createEventVM.Name,
+                Description = createEventVM.Description,
+                Price = createEventVM.Price,
+                Quantity = createEventVM.Quantity,
+                DateOfEvent = createEventVM.DateOfEvent,
+                Status = createEventVM.Status,
+                EventCategories = eventCategories,
+                ImageURL = createEventVM.ImageURL,
+                CreatedAt = DateTime.Now,
+                ModifiedAt = DateTime.Now,
+                CreatedById = createEventVM.CreatedById
+            };
+            var res = await _eventsRepository.CreateAsync(@event);
+            return res;
         }
 
         public async Task<Event> DeleteAsync(int id)

@@ -9,7 +9,7 @@ namespace TicketStationMVC.Services.ServiceInterfaces
         public Task<User> GetUserDetailsByIdAsync(int id);
         public Task<ICollection<User>> GetAllUsersAsync();
         public Task<User> GetUserByEmailAsync(string email);
-        public Task<User> CreateUser(User user);
+        public Task<User> CreateUser(UserCreateVM user);
         public Task<User> UpdateAsync(User user);
         public Task<User> DeleteAsync(int id);
     }

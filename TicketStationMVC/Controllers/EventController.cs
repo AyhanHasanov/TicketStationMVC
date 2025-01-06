@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Services.ServiceInterfaces;
@@ -38,13 +40,13 @@ namespace TicketStationMVC.Controllers
 
             var vmMaps = items.Select(x => new EventViewVM()
             {
+                Id = x.Id,
                 Name = x.Name,
                 Price = x.Price,
                 DateOfEvent = x.DateOfEvent,
                 ImageURL = x.ImageURL,
                 Categories = _eventService.GetCategoriesForEventAsync(x.Id).Result
             });
-
 
             return View(vmMaps);
         }
@@ -53,21 +55,27 @@ namespace TicketStationMVC.Controllers
         // GET: Events/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            return default;
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
+            if (id == null)
+                return NotFound();
 
-            //var @event = await _context.Events
-            //    .Include(@ => @.CreatedBy)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
-            //if (@event == null)
-            //{
-            //    return NotFound();
-            //}
+            var @event = await _eventService.GetEventByIdAsync(id.Value);
 
-            //return View(@event);
+            //mapp
+
+            EventDetailedVM detailedVM = new EventDetailedVM()
+            {
+                Name = @event.Name,
+                Description = @event.Description,
+                Price = @event.Price,
+                Quantity = @event.Quantity,
+                Status = @event.Status,
+                DateOfEvent = @event.DateOfEvent,
+                ImageURL = @event.ImageURL,
+                CreatedByUsername = (await _userService.GetUserByIdAsync(@event.CreatedById)).Username,
+                Categories = _eventService.GetCategoriesForEventAsync(@event.Id).Result
+            };
+
+            return View(detailedVM);
         }
 
         // GET: Events/Create
@@ -87,12 +95,27 @@ namespace TicketStationMVC.Controllers
         [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm]EventCreateVM vm)
+        public async Task<IActionResult> Create([FromForm] EventCreateVM createEventVM, IFormFile? imageFile)
         {
-
             if (ModelState.IsValid)
             {
-                if (vm == null)
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    //concatinates the date and time of the upload in order to avoid duplicated image names
+                    var fileNameWithExtension = Path.GetFileName(imageFile.FileName);
+                    var fileName = fileNameWithExtension.Split('.')[0].Trim() + DateTime.Now.ToString("yyyMMddHHmmssff");
+                    var extension = fileNameWithExtension.Split('.')[1].Trim();
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "image", String.Concat(fileName, '.', extension));
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    createEventVM.ImageURL = "/image/" + String.Concat(fileName, '.', extension);
+                }
+
+                if (createEventVM == null)
                     return BadRequest();
 
                 var user = await _userService.GetUserByEmailAsync((_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value);
@@ -100,54 +123,13 @@ namespace TicketStationMVC.Controllers
                 if (user == null)
                     return BadRequest();
 
-                Event @event = new Event()
-                {
-                    Name = vm.Name,
-                    Description = vm.Description,
-                    Price = vm.Price,
-                    Quantity = vm.Quantity,
-                    DateOfEvent = vm.DateOfEvent,
-                    Status = vm.Status,
-                    EventCategories = vm.EventCategories,
-                    ImageURL = vm.ImageURL,
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = DateTime.Now,
-                    CreatedById = user.Id
-                };
+                createEventVM.CreatedById = user.Id;
 
-                await _eventService.CreateAsync(@event);
+                await _eventService.CreateAsync(createEventVM);
                 return RedirectToAction(nameof(Index));
             }
 
             return View();
-
-            //if (ModelState.IsValid)
-            //{
-            //    if(vm == null)
-            //        return BadRequest(ModelState);
-
-            //    var userEmail = (_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c=>c.Type == ClaimTypes.Email)?.Value;
-
-            //    var user = _
-
-            //    Event @event = new Event()
-            //    {
-            //        Name = vm.Name,
-            //        Description = vm.Description,
-            //        DateOfEvent = vm.DateOfEvent,
-            //        ImageURL = vm.ImageURL,
-            //        Status = vm.Status,
-            //        Price = vm.Price,
-            //        Quantity = vm.Quantity,
-            //        CreatedAt = DateTime.Now,
-            //        CreatedById = _httpContextAccessor.HttpContext?.User
-            //    };
-            //}
-
-            //if (ModelState.IsValid)
-            //{
-
-            //}
         }
 
         // GET: Events/Edit/5
@@ -211,39 +193,59 @@ namespace TicketStationMVC.Controllers
         }
 
         // GET: Events/Delete/5
+        [HttpGet]
+        [Authorize]
+        [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Delete(int? id)
         {
-            return default;
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            //var @event = await _context.Events
-            //    .Include(@ => @.CreatedBy)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
-            //if (@event == null)
-            //{
-            //    return NotFound();
-            //}
+            var @event = await _eventService.GetEventByIdAsync(id.Value);
 
-            //return View(@event);
+            EventDetailedVM detailedVM = new EventDetailedVM()
+            {
+                Id = @event.Id,
+                Name = @event.Name,
+                Description = @event.Description,
+                Price = @event.Price,
+                Quantity = @event.Quantity,
+                Status = @event.Status,
+                DateOfEvent = @event.DateOfEvent,
+                ImageURL = @event.ImageURL,
+                CreatedByUsername = (await _userService.GetUserByIdAsync(@event.CreatedById)).Username,
+                Categories = _eventService.GetCategoriesForEventAsync(@event.Id).Result
+            };
+
+            return View(detailedVM);
         }
 
         // POST: Events/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize]
+        [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return default;
-            //    var @event = await _context.Events.FindAsync(id);
-            //    if (@event != null)
-            //    {
-            //        _context.Events.Remove(@event);
-            //    }
+            var eventToDelete = await _eventService.GetEventByIdAsync(id);
+            if (eventToDelete == null)
+            {
+                return NotFound();
+            }
 
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
+            // Get the image file path
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", eventToDelete.ImageURL.TrimStart('/'));
+
+            if (System.IO.File.Exists(imagePath))
+            { 
+                System.IO.File.Delete(imagePath);
+            }
+
+            await _eventService.DeleteAsync(eventToDelete.Id);
+
+            return RedirectToAction(nameof(Index)); 
         }
 
         private bool EventExists(int id)
