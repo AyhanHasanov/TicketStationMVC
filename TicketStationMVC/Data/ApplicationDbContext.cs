@@ -86,6 +86,7 @@ namespace TicketStationMVC.Data
         public DbSet<TicketStationMVC.ViewModels.Events.EventViewVM> EventViewVM { get; set; } = default!;
         public DbSet<TicketStationMVC.ViewModels.Events.EventCreateVM> EventCreateVM { get; set; } = default!;
         public DbSet<TicketStationMVC.ViewModels.Events.EventDetailedVM> EventDetailedVM { get; set; } = default!;
+        public DbSet<TicketStationMVC.ViewModels.Events.EventEditVM> EventEditVM { get; set; } = default!;
         //public DbSet<TicketStationMVC.ViewModels.Category.CategoryVM> CategoryCreateVM { get; set; } = default!;
         //public DbSet<TicketStationMVC.ViewModels.Account.AccountDetailsVM> AccountDetailsVM { get; set; } = default!;
         //public DbSet<TicketStationMVC.ViewModels.Account.AccountChangePassVM> AccountChangePassVM { get; set; } = default!;

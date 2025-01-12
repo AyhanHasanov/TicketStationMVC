@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 using TicketStationMVC.CustomAttributes;
-using TicketStationMVC.Data.Entities;
 
 namespace TicketStationMVC.ViewModels.Events
 {
-    public class EventCreateVM
+    public class EventEditVM
     {
         [Key]
         public int Id { get; set; }
@@ -42,13 +41,8 @@ namespace TicketStationMVC.ViewModels.Events
         [EnsureOneElement(ErrorMessage = "Please select at least one category!")]
         public List<int>? CategoryIds { get; set; }
 
-        public int ModifiedById { get; set; }
-        public int CreatedById { get; set; }
-
         [NotMapped]
         [DisplayName("Upload file")]
         public IFormFile? ImageFile { get; set; }
-
-
     }
 }

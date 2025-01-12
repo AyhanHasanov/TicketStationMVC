@@ -31,6 +31,7 @@ namespace TicketStationMVC.Data.Entities
         public User? CreatedBy { get; set; }
 
         public int CreatedById { get; set; }
+        public int ModifiedById { get; set; }
 
         [Required]
         public bool Status { get; set; } // is active or passed

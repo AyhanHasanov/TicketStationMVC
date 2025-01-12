@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
@@ -13,7 +14,7 @@ namespace TicketStationMVC.Services
         private readonly IRepository<Event> _eventsRepository;
         public EventService(IRepository<Event> repo, ApplicationDbContext context)
         {
-            _eventsRepository = repo; 
+            _eventsRepository = repo;
             _context = context;
         }
         public async Task<Event> CreateAsync(EventCreateVM createEventVM)
@@ -37,8 +38,11 @@ namespace TicketStationMVC.Services
                 ImageURL = createEventVM.ImageURL,
                 CreatedAt = DateTime.Now,
                 ModifiedAt = DateTime.Now,
-                CreatedById = createEventVM.CreatedById
+                CreatedById = createEventVM.CreatedById,
+                ModifiedById = createEventVM.ModifiedById
             };
+
+
             var res = await _eventsRepository.CreateAsync(@event);
             return res;
         }
@@ -57,18 +61,61 @@ namespace TicketStationMVC.Services
         {
             return await _eventsRepository.GetByIdAsync(id);
         }
-
-        public async Task<Event> UpdateAsync(Event @event)
+        
+        public async Task<Event> UpdateAsync(EventEditVM eventEditVM, int userId)
         {
-            return await _eventsRepository.UpdateAsync(@event);
+
+            var existingEvent = await this.GetEventByIdAsync(eventEditVM.Id);
+            existingEvent.Name = eventEditVM.Name;
+            existingEvent.Description = eventEditVM.Description;
+            existingEvent.Quantity = eventEditVM.Quantity;
+            existingEvent.Price = eventEditVM.Price;
+            existingEvent.ModifiedAt = DateTime.Now;
+            existingEvent.ModifiedById = userId;
+            existingEvent.DateOfEvent = eventEditVM.DateOfEvent;
+            existingEvent.Status = eventEditVM.Status;
+
+            if (eventEditVM.ImageURL != null)
+            {
+                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingEvent.ImageURL.TrimStart('/'));
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+
+                existingEvent.ImageURL = eventEditVM.ImageURL;
+            }
+            
+            existingEvent.EventCategories = new List<EventCategories>();
+
+            var existingEventCategories = _context.EventCategories?
+                .Where(ec => ec.EventId == existingEvent.Id);
+
+            if (_context.EventCategories == null || existingEventCategories == null)
+                throw new Exception("Empty");
+
+            _context.EventCategories.RemoveRange(existingEventCategories);
+
+            foreach (var item in eventEditVM.CategoryIds)
+            {
+                existingEvent.EventCategories
+                    .Add(new EventCategories()
+                    {
+                        EventId = existingEvent.Id,
+                        CategoryId = item
+                    });
+            }
+
+            return await _eventsRepository.UpdateAsync(existingEvent);
         }
 
-        public async Task<ICollection<string>> GetCategoriesForEventAsync(int eventId)
+        public async Task<ICollection<Category>> GetCategoriesForEventAsync(int eventId)
         {
-             var categories = await _context.EventCategories
-                .Where(ec => ec.EventId == eventId)
-                .Select(ec => ec.Category.Name) 
-                .ToListAsync();
+            var categories = await _context.EventCategories
+               .Where(ec => ec.EventId == eventId)
+               .Select(ec => ec.Category)
+               .ToListAsync();
 
             return categories;
         }
