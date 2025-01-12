@@ -1,0 +1,21 @@
+﻿@model TicketStationMVC.ViewModels.Cart.CartVM
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+@if (Model.Items.Count() > 0)
+{
+    @foreach (var i in Model.Items)
+    {
+        <img src=@i.ImageUrl>
+        <p>@i.Name</p>
+        <p>@i.Price</p>
+        <a class="quantity-button" asp-action="DecreaseQuantity" asp-route-cartItemId="@i.Id">-</a>
+        <p>@i.Quantity</p>
+        <a class="quantity-button" asp-action="IncreaseQuantity" asp-route-cartItemId="@i.Id">+</a>
+        <a class="link-button" asp-action="RemoveEvent" asp-route-cartItemId="@i.Id">Remove</a>
+    }
+    <p>@ViewBag.Total</p>
+}

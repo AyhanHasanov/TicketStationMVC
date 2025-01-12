@@ -42,7 +42,6 @@ namespace TicketStationMVC.Services
                 ModifiedById = createEventVM.ModifiedById
             };
 
-
             var res = await _eventsRepository.CreateAsync(@event);
             return res;
         }

@@ -5,6 +5,7 @@ using TicketStationMVC.ViewModels.Category;
 using TicketStationMVC.ViewModels.Account;
 using TicketStationMVC.ViewModels.User;
 using TicketStationMVC.ViewModels.Events;
+using TicketStationMVC.ViewModels.Cart;
 
 namespace TicketStationMVC.Data
 {
@@ -87,6 +88,7 @@ namespace TicketStationMVC.Data
         public DbSet<TicketStationMVC.ViewModels.Events.EventCreateVM> EventCreateVM { get; set; } = default!;
         public DbSet<TicketStationMVC.ViewModels.Events.EventDetailedVM> EventDetailedVM { get; set; } = default!;
         public DbSet<TicketStationMVC.ViewModels.Events.EventEditVM> EventEditVM { get; set; } = default!;
+        public DbSet<TicketStationMVC.ViewModels.Cart.CartVM> CartVM { get; set; } = default!;
         //public DbSet<TicketStationMVC.ViewModels.Category.CategoryVM> CategoryCreateVM { get; set; } = default!;
         //public DbSet<TicketStationMVC.ViewModels.Account.AccountDetailsVM> AccountDetailsVM { get; set; } = default!;
         //public DbSet<TicketStationMVC.ViewModels.Account.AccountChangePassVM> AccountChangePassVM { get; set; } = default!;

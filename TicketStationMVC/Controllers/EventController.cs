@@ -61,33 +61,16 @@ namespace TicketStationMVC.Controllers
                 result.Add(current);
             }
 
-            //var vmMaps = items.Select(x => new EventViewVM()
-            //{
-            //    Id = x.Id,
-            //    Name = x.Name,
-            //    Price = x.Price,
-            //    DateOfEvent = x.DateOfEvent,
-            //    ImageURL = x.ImageURL
-            //});
-
-            //foreach (var item in vmMaps)
-            //{
-            //    item.Categories = (await _eventService.GetCategoriesForEventAsync(item.Id)).Select(es => es.Name).ToList();
-            //}
-
             return View(result);
         }
 
         [HttpGet]
-        // GET: Events/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
                 return NotFound();
 
             var @event = await _eventService.GetEventByIdAsync(id.Value);
-
-            //mapp
 
             EventDetailedVM detailedVM = new EventDetailedVM()
             {
@@ -105,7 +88,6 @@ namespace TicketStationMVC.Controllers
             return View(detailedVM);
         }
 
-        // GET: Events/Create
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -115,9 +97,6 @@ namespace TicketStationMVC.Controllers
             return View();
         }
 
-        // POST: Events/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -155,11 +134,9 @@ namespace TicketStationMVC.Controllers
                 await _eventService.CreateAsync(createEventVM);
                 return RedirectToAction(nameof(Index));
             }
-
             return View();
         }
 
-        // GET: Events/Edit/5
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -192,9 +169,6 @@ namespace TicketStationMVC.Controllers
             return View(editVM);
         }
 
-        // POST: Events/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -228,11 +202,8 @@ namespace TicketStationMVC.Controllers
                         {
                             await imageFile.CopyToAsync(stream);
                         }
-
                         eventEditVM.ImageURL = "/image/" + String.Concat(fileName, '.', extension);
                     }
-
-
                     await _eventService.UpdateAsync(eventEditVM, user.Result.Id);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -246,34 +217,6 @@ namespace TicketStationMVC.Controllers
             }
 
             return View(eventEditVM);
-
-            //if (id != @event.Id)
-            //{
-            //    return NotFound();
-            //}
-
-            //if (ModelState.IsValid)
-            //{
-            //    try
-            //    {
-            //        _context.Update(@event);
-            //        await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateConcurrencyException)
-            //    {
-            //        if (!EventExists(@event.Id))
-            //        {
-            //            return NotFound();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Email", @event.CreatedById);
-            //return View(@event);
         }
 
         // GET: Events/Delete/5
@@ -286,7 +229,7 @@ namespace TicketStationMVC.Controllers
             {
                 return NotFound();
             }
-
+            
             var @event = await _eventService.GetEventByIdAsync(id.Value);
 
             EventDetailedVM detailedVM = new EventDetailedVM()
@@ -302,11 +245,9 @@ namespace TicketStationMVC.Controllers
                 CreatedByUsername = (await _userService.GetUserByIdAsync(@event.CreatedById)).Username,
                 Categories = (await _eventService.GetCategoriesForEventAsync(@event.Id)).Select(es => es.Name).ToList()
             };
-
             return View(detailedVM);
         }
 
-        // POST: Events/Delete/5
         [HttpPost, ActionName("Delete")]
         [Authorize]
         [Authorize(Roles = "adminuser")]
