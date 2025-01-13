@@ -2,39 +2,84 @@
 
 @{
     ViewData["Title"] = "Login";
-}
+}<style>
 
-<h1>Login</h1>
+     #login-container {
+         width: 40vw;
+         padding: 1rem 1rem;
+         border-radius: 10px;
+         box-shadow: 0 0 80px 0 rgb(32 32 125 / 8%);
+         margin-top: 2rem !important;
+     }
 
-<h4>User</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-controller="Auth" asp-action="Login">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         #login-container > :first-child {
+             margin-top: 2rem;
+         }
 
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
-            </div>
+     #inner-form {
+         width: 80%;
+         margin: auto;
+         margin-top: 2rem;
+     }
 
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input type="password" asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
-            </div>
-        </form>
-        <p>Dont have an account?</p>
-        <a asp-controller="Auth" asp-action="Register" asp-area="">Register now</a>
+     #login-group {
+         margin-bottom: 2rem;
+         margin-top: 0.5rem;
+     }
+
+         #login-group > input {
+             width: 100%;
+         }
+
+     #register-group {
+         display: flex;
+         flex-direction: row;
+         flex-wrap: nowrap;
+         justify-content: space-between;
+         align-items: center;
+         align-content: center;
+     }
+
+     #inner-form .form-group {
+         margin-bottom: 1rem;
+     }
+
+</style>
+
+
+<div class="container-md my-2" id="login-container">
+    <div class="row">
+        <div>
+            <h2 class="text-center">Login</h2>
+            <h5 class="text-center fw-light">TicketStationMVC</h5>
+        </div>
+        <div>
+            <form method="post" asp-controller="Auth" asp-action="Login">
+                <div id="inner-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Username" class="control-label text-black-50"></label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Password" class="control-label text-black-50"></label>
+                        <input type="password" asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" id="login-group">
+                        <input type="submit" value="Login" class="btn btn-primary" />
+                    </div>
+                    <div class="form-group" id="register-group">
+                        <p style="margin: 0px;">Don't have an account? </p>
+                        <a class="btn btn-link" asp-area="" asp-controller="Auth" asp-action="Register">Register now</a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
