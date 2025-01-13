@@ -4,28 +4,28 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Category</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <p class="lead mt-5 mb-1">Create</p>
+        <div class="col d-flex justify-content-between align-items-center mt-1 mb-3">
+            <div>
+                <h1>New Category</h1>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <a class="btn btn-primary" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to list"><i class="bi bi-arrow-left"></i></a>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group d-flex">
+            <input asp-for="Name" class="form-control me-5" placeholder="Name" />
+            <input type="submit" value="Create" class="btn btn-primary px-4" />
+        </div>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </form>
+
 </div>
 
 @section Scripts {

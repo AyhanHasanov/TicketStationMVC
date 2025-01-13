@@ -10,6 +10,7 @@ namespace TicketStationMVC.Data.Entities
         [Required]
         [MaxLength(150)]
         [MinLength(2)]
+        [Display(Name="Name")]
         public string Name { get; set; }
         public virtual ICollection<EventCategories> EventCategories { get; set; }
     }

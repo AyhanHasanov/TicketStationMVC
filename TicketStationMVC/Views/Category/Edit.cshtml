@@ -4,31 +4,57 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>CategoryCreateVM</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <p class="lead mt-5 mb-1">@Model.GetType().Name.Substring(0, Model.GetType().Name.IndexOf('V')) Edit</p>
+        <div class="col d-flex justify-content-between align-items-center mt-1 mb-3">
+            <div>
+                <h1>@Model.Name</h1>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <a class="btn btn-primary" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to list"><i class="bi bi-arrow-left"></i></a>
             </div>
-        </form>
+        </div>
     </div>
+
+    <form id="editForm" asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group d-flex">
+            <input asp-for="Name" class="form-control me-5" placeholder="Name"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+            <button type="button" class="btn btn-success px-4" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+        </div>
+    </form>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit @Model?.GetType().Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Would you like to save the changes made to '@Html.DisplayFor(model => model.Name)' @Model?.GetType().Name?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="saveChangesBtn">Save changes</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        // Handle form submission from the modal
+        document.getElementById("saveChangesBtn").addEventListener("click", function () {
+            document.getElementById("editForm").submit(); // Submit the form when "Save changes" is clicked
+        });
+    </script>
 }
