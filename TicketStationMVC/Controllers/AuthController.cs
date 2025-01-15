@@ -8,18 +8,20 @@ using TicketStationMVC.Data;
 using TicketStationMVC.ViewModels.User;
 using Microsoft.EntityFrameworkCore;
 using TicketStationMVC.Services.ServiceInterfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace TicketStationMVC.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ApplicationDbContext context, ILogger<AuthController> logger, IUserService userService)
+        public AuthController(ILogger<AuthController> logger, IUserService userService)
         {
-            _context = context;
             _logger = logger;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -39,14 +41,14 @@ namespace TicketStationMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (await _context.Users.AnyAsync(u => u.Username.Equals(registrationVM.Username)))
+                if ((await _userService.GetAllUsersAsync()).Any(u => u.Username.Equals(registrationVM.Username)))
                 {
                     //username is taken
                     ModelState.AddModelError("", "Username is already taken!");
                     return View(registrationVM);
                 }
-
-                if (await _context.Users.AnyAsync(u => u.Email.Equals(registrationVM.Email)))
+                
+                if ((await _userService.GetAllUsersAsync()).Any(u=>u.Email.Equals(registrationVM.Email)))
                 {
                     //user is already registered
                     ModelState.AddModelError("", "User is already registered with this email!");
@@ -54,24 +56,19 @@ namespace TicketStationMVC.Controllers
                 }
 
                 //user is not registered, register them
-                string hashedPass = BCrypt.Net.BCrypt.HashPassword(registrationVM.Password);
-
-                var user = new User()
+                //all newly registered users are assigned ordinary user role
+                //viewmodel bc CreateUser in the service takes createviewmodel as parameter
+                var userVm = new UserCreateVM()
                 {
+                    Name = registrationVM.Name,
                     Username = registrationVM.Username,
                     Email = registrationVM.Email,
-                    Password = hashedPass,
-                    Name = registrationVM.Name,
-                    RegisteredOn = DateTime.UtcNow,
-                    RoleId = 2,
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = DateTime.Now
+                    Password = registrationVM.Password,
+                    RoleId = 2
                 };
 
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Login");
-
+                await _userService.CreateUser(userVm);
+                return RedirectToAction(nameof(Login));
             }
             return View();
         }
@@ -97,11 +94,11 @@ namespace TicketStationMVC.Controllers
                 //note: username field in the loginvm is for username OR email!
                 //check is user exists
 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.Equals(loginVM.Username) || u.Email.Equals(loginVM.Username));
+                var user = (await _userService.GetAllUsersAsync()).FirstOrDefault(u => u.Username.Equals(loginVM.Username) || u.Email.Equals(loginVM.Username));
 
                 if (user == null)
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    ModelState.AddModelError("", "No accounts exists with this username/email");
                     return View();
                 }
 
@@ -111,13 +108,14 @@ namespace TicketStationMVC.Controllers
                     return View();
                 }
                 //login successful
-                var role = _context.Roles.Single(r => r.Id.Equals(user.RoleId)).Name;
+                var role = await _userService.GetRoleOfUserByIdAsync(user.Id);
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim("FullName", user.Name),
-                    new Claim(ClaimTypes.Role, role)
+                    new Claim(ClaimTypes.Role, role.Name)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -135,8 +133,7 @@ namespace TicketStationMVC.Controllers
 
                 _logger.LogInformation("User {Email} has logged in at {Time}", user.Email, DateTime.UtcNow);
 
-                return RedirectToAction("Index", "Home");
-
+                return RedirectToAction("Index", "Event");
             }
             return View();
         }
@@ -146,10 +143,10 @@ namespace TicketStationMVC.Controllers
         public async Task<IActionResult> Logout()
         {
             await LogoutConfirmed();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Event");
         }
 
-        [HttpPost, ActionName("Logout")]
+        [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogoutConfirmed()

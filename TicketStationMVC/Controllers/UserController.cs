@@ -12,7 +12,6 @@ namespace TicketStationMVC.Controllers
 {
     public class UserController : Controller
     {
-        //access to this controller will have only the admins
         //Only the admins can create, view, edit or delete users
 
         private readonly IUserService _userService;
@@ -22,28 +21,29 @@ namespace TicketStationMVC.Controllers
             _userService = userService;
             _context = context;
         }
-        // GET: UserController
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Index()
         {
-            var items = await (from user in _context.Users
-                               join role in _context.Roles
-                               on user.RoleId equals role.Id
-                               select new UserViewVM
-                               {
-                                   Id = user.Id,
-                                   Username = user.Username,
-                                   Name = user.Name,
-                                   Email = user.Email,
-                                   RoleName = role.Name
-                               }).ToListAsync();
+            var users = await _userService.GetAllUsersAsync();
+            List<UserViewVM> userViews = new List<UserViewVM>();
+            foreach (var user in users)
+            {
+                var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
+                userViews.Add(new UserViewVM()
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Name = user.Name,
+                    Email = user.Email,
+                    RoleName = roleName
+                });
+            }
 
-            return View(items);
+            return View(userViews);
         }
 
-        // GET: UserController/Details/5
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -56,7 +56,7 @@ namespace TicketStationMVC.Controllers
                 if (user == null)
                     return NotFound();
 
-                var roleName = _context.Roles?.FirstOrDefault(r => r.Id == user.RoleId).Name;
+                var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
 
                 UserDetailsVM detailsVM = new UserDetailsVM()
                 {
@@ -73,7 +73,6 @@ namespace TicketStationMVC.Controllers
             return View();
         }
 
-        // GET: UserController/Create
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -89,6 +88,7 @@ namespace TicketStationMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserCreateVM userCreateVM)
         {
+            ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
             if (ModelState.IsValid)
             {
                 if ((await _userService.GetAllUsersAsync()).Any(u => u.Email.Equals(userCreateVM.Email)))
@@ -103,7 +103,6 @@ namespace TicketStationMVC.Controllers
             return View();
         }
 
-        // GET: UserController/Edit/5
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
@@ -112,7 +111,6 @@ namespace TicketStationMVC.Controllers
             ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
             var user = await _userService.GetUserByIdAsync(id);
 
-            //mapping
             var userVm = new UserEditVM()
             {
                 Name = user.Name,
@@ -125,13 +123,14 @@ namespace TicketStationMVC.Controllers
             return View(userVm);
         }
 
-        // POST: UserController/Edit/5
         [HttpPost]
         [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserEditVM editVm)
         {
+            ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
+
             if (ModelState.IsValid)
             {
                 if (editVm == null)
@@ -157,17 +156,16 @@ namespace TicketStationMVC.Controllers
             return View(editVm);
         }
 
-        // GET: UserController/Delete/5
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Delete(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-            var roleName = (await _context.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId)).Name;
+            var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
 
             if (roleName == null)
-                return NotFound();
+                roleName = "not available";
 
             var userVM = new UserDetailsVM()
             {
@@ -182,7 +180,6 @@ namespace TicketStationMVC.Controllers
             return View(userVM);
         }
 
-        // POST: UserController/Delete/5
         [HttpPost]
         [Authorize]
         [Authorize(Roles = "adminuser")]

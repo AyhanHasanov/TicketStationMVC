@@ -4,45 +4,35 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <p class="lead mt-5 mb-1">@Model.GetType().Name.Substring(0,4) Details</p>
+        <div class="col d-flex justify-content-between align-items-center mt-1 mb-3">
+            <div>
+                <h1>@Model.Name</h1>
+            </div>
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <a class="btn btn-primary" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to list"><i class="bi bi-arrow-left"></i></a>
+                <a class="btn btn-primary btn-success" asp-action="Edit" asp-route-id="@Model?.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"><i class="bi bi-pen"></i></a>
+                <a class="btn btn-primary btn-danger" asp-action="Delete" asp-route-id="@Model?.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i class="bi bi-trash"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="container border border-1 rounded">
+        <div class="row align-items-center py-2 border-bottom border-1 fw-bold">
+            <div class="col">@Html.DisplayNameFor(model => model.Name)</div>
+            <div class="col">@Html.DisplayNameFor(model => model.Username)</div>
+            <div class="col">@Html.DisplayNameFor(model => model.Email)</div>
+            <div class="col">@Html.DisplayNameFor(model => model.RoleName)</div>
+            <div class="col">@Html.DisplayNameFor(model => model.RegisteredOn)</div>
+        </div>
 
-<div>
-    <h4>UserDetailsVM</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RegisteredOn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RegisteredOn)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RoleName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RoleName)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <div class="row align-items-center py-2 border-bottom">
+            <div class="col">@Html.DisplayFor(model => model.Name)</div>
+            <div class="col">@Html.DisplayFor(model => model.Username)</div>
+            <div class="col">@Html.DisplayFor(model => model.Email)</div>
+            <div class="col">@Html.DisplayFor(model => model.RoleName)</div>
+            <div class="col">@Html.DisplayFor(model => model.RegisteredOn)</div>
+        </div>
+    </div>
 </div>

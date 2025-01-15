@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TicketStationMVC.Data.Entities;
-using TicketStationMVC.ViewModels.Category;
-using TicketStationMVC.ViewModels.Account;
-using TicketStationMVC.ViewModels.User;
-using TicketStationMVC.ViewModels.Events;
-using TicketStationMVC.ViewModels.Cart;
 
 namespace TicketStationMVC.Data
 {
@@ -45,7 +39,8 @@ namespace TicketStationMVC.Data
                 .HasForeignKey(ec => ec.CategoryId);
 
             modelBuilder.Entity<EventCategories>()
-                .HasKey(ec => new {ec.EventId, ec.CategoryId});
+                .HasKey(ec => new { ec.EventId, ec.CategoryId });
+
 
             modelBuilder.Entity<Role>()
                 .HasData(new Role()
@@ -58,7 +53,7 @@ namespace TicketStationMVC.Data
                 new Role()
                 {
                     Id = 2,
-                    Name="ordinaryuser",
+                    Name = "ordinaryuser",
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 });
@@ -78,23 +73,207 @@ namespace TicketStationMVC.Data
                 }
                 );
 
+            modelBuilder.Entity<Category>()
+                .HasData(
+                new Category()
+                {
+                    Id = 1,
+                    Name = "Music Concert",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 2,
+                    Name = "Sport",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 3,
+                    Name = "Theater",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 4,
+                    Name = "Art",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 5,
+                    Name = "Festival",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 6,
+                    Name = "Workshop",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 7,
+                    Name = "Charity",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 8,
+                    Name = "Food & Drinks",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 9,
+                    Name = "Trade show",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                },
+                new Category()
+                {
+                    Id = 10,
+                    Name = "Family & kids",
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now
+                });
+
+            modelBuilder.Entity<Event>()
+                .HasData(
+                new Event()
+                {
+                    Id = 1,
+                    ImageURL = @"/image/rock.jpg",
+                    Name = "Music Concert: \"Summer Rock Fest\"",
+                    Description = "A high-energy music festival featuring top rock bands from around the world. Enjoy live performances, food stalls, and exciting activities for all ages. Come for the music, stay for the unforgettable atmosphere!",
+                    DateOfEvent = DateTime.Now.AddDays(35),
+                    Price = 60,
+                    Quantity = 250,
+                    CreatedById = 1,
+                    ModifiedById = 1,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now,
+                    Status = true
+                }, 
+                new Event()
+                {
+                    Id = 2,
+                    ImageURL = @"/image/football.jpg",
+                    Name = "Basketball Game: \"City Championship Finals\"",
+                    Description = "Witness the most thrilling basketball match of the season as the two best teams in the city battle it out for the championship title. Come support your local team and experience the adrenaline rush of the final game!",
+                    DateOfEvent = DateTime.Now.AddDays(105),
+                    Price = 120,
+                    Quantity = 400,
+                    CreatedById = 1,
+                    ModifiedById = 1,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now,
+                    Status = true
+                    
+                },
+                new Event()
+                {
+                    Id = 3,
+                    ImageURL = @"/image/william.jpeg",
+                    Name = "Theater Play: \"Shakespeare Under the Stars\"",
+                    Description = "An outdoor performance of one of Shakespeare's greatest plays, \"A Midsummer Night's Dream.\" Enjoy a magical evening under the stars, with actors performing in a beautiful outdoor setting surrounded by nature.",
+                    DateOfEvent = DateTime.Now.AddDays(125),
+                    Price = 90,
+                    Quantity = 50,
+                    CreatedById = 1,
+                    ModifiedById = 1,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now,
+                    Status = true
+                },
+                new Event()
+                {
+                    Id = 4,
+                    ImageURL = @"/image/ai.jpg",
+                    Name = "Tech Conference: \"Future of AI Summit\"",
+                    Description = "Join industry leaders, innovators, and tech enthusiasts at the Future of AI Summit. This conference covers the latest advancements in artificial intelligence, machine learning, and their impact on industries like healthcare, finance, and entertainment.",
+                    DateOfEvent = DateTime.Now.AddDays(25),
+                    Price = 20,
+                    Quantity = 70,
+                    CreatedById = 1,
+                    ModifiedById = 1,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now,
+                    Status = true
+                },
+                new Event()
+                {
+                    Id = 5,
+                    ImageURL = @"/image/disney.jpg",
+                    Name = "Family Fun Day: \"Magic Kingdom Adventure\"",
+                    Description = "A day of family-friendly activities, games, and entertainment at the Magic Kingdom. Kids can enjoy carnival rides, face painting, storytelling sessions, and more. Perfect for families looking to spend quality time together.",
+                    DateOfEvent = DateTime.Now.AddDays(295),
+                    Price = 200,
+                    Quantity = 700,
+                    CreatedById = 1,
+                    ModifiedById = 1,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = DateTime.Now,
+                    Status = true
+                }
+                );
+
+            modelBuilder.Entity<EventCategories>()
+                .HasData(
+                new EventCategories()
+                {
+                    EventId = 1,
+                    CategoryId = 1
+                },
+                new EventCategories()
+                {
+                    EventId = 2,
+                    CategoryId = 2
+                },
+                new EventCategories()
+                {
+                    EventId = 3,
+                    CategoryId = 3
+                },
+                new EventCategories()
+                {
+                    EventId = 3,
+                    CategoryId = 4
+                },
+                new EventCategories()
+                {
+                    EventId = 4,
+                    CategoryId = 6
+                },
+                new EventCategories()
+                {
+                    EventId = 4,
+                    CategoryId = 7
+                },
+                new EventCategories()
+                {
+                    EventId = 5,
+                    CategoryId = 8
+                },
+                new EventCategories()
+                {
+                    EventId = 5,
+                    CategoryId = 10
+                });
+
             base.OnModelCreating(modelBuilder);
         }
         public void EnsureDatabaseCreated()
         {
             Database.EnsureCreated();
         }
-        public DbSet<TicketStationMVC.ViewModels.Events.EventViewVM> EventViewVM { get; set; } = default!;
-        public DbSet<TicketStationMVC.ViewModels.Events.EventCreateVM> EventCreateVM { get; set; } = default!;
-        public DbSet<TicketStationMVC.ViewModels.Events.EventDetailedVM> EventDetailedVM { get; set; } = default!;
-        public DbSet<TicketStationMVC.ViewModels.Events.EventEditVM> EventEditVM { get; set; } = default!;
-        public DbSet<TicketStationMVC.ViewModels.Cart.CartVM> CartVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.Category.CategoryVM> CategoryCreateVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.Account.AccountDetailsVM> AccountDetailsVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.Account.AccountChangePassVM> AccountChangePassVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.User.UserViewVM> UserViewVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.User.UserDetailsVM> UserDetailsVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.User.UserCreateVM> UserCreateVM { get; set; } = default!;
-        //public DbSet<TicketStationMVC.ViewModels.User.UserEditVM> UserEditVM { get; set; } = default!;
     }
 }

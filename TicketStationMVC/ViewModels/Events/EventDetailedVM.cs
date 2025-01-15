@@ -16,12 +16,16 @@ namespace TicketStationMVC.ViewModels.Events
 
         public int Quantity { get; set; }
 
+        [Display(Name="Date of event")]
         public DateTime DateOfEvent { get; set; }
 
+        [Display(Name = "Created by")]
         public string? CreatedByUsername { get; set; }
 
+        [Display(Name = "Is upcoming")]
         public bool Status { get; set; } // is active or passed
 
+        [Display(Name="Image url")]
         public string ImageURL { get; set; }
 
         public virtual ICollection<string> Categories { get; set; }

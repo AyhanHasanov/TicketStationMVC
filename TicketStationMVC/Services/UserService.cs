@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
@@ -10,11 +11,13 @@ namespace TicketStationMVC.Services
     public class UserService : IUserService
     {
         private readonly IRepository<User> _userRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ApplicationDbContext _context;
-        public UserService(IRepository<User> repo, ApplicationDbContext context)
+        public UserService(IRepository<User> repo, ApplicationDbContext context, IHttpContextAccessor contextAccessor)
         {
             _userRepository = repo;
             _context = context;
+            _httpContextAccessor = contextAccessor;
         }
         public async Task<ICollection<User>> GetAllUsersAsync()
         {
@@ -59,6 +62,24 @@ namespace TicketStationMVC.Services
         public async Task<User> UpdateAsync(User user)
         {
             return await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<Role> GetRoleOfUserByIdAsync(int id)
+        {
+            var user = await this.GetUserByIdAsync(id);
+            Role role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
+            return role;
+        }
+
+        public async Task<User> GetCurrentLoggedUserAsync()
+        {
+            var emailClaim = (_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email));
+            
+            if (emailClaim == null)
+                throw new Exception("no claims for this user");
+
+            var user = await this.GetUserByEmailAsync(emailClaim.Value);
+            return user;
         }
     }
 }

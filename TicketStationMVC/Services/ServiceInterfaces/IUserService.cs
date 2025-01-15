@@ -12,5 +12,7 @@ namespace TicketStationMVC.Services.ServiceInterfaces
         public Task<User> CreateUser(UserCreateVM user);
         public Task<User> UpdateAsync(User user);
         public Task<User> DeleteAsync(int id);
+        public Task<Role> GetRoleOfUserByIdAsync(int id);
+        public Task<User> GetCurrentLoggedUserAsync();
     }
 }

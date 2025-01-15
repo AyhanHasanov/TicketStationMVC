@@ -4,51 +4,90 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <p class="lead mt-5 mb-1">User Edit</p>
+        <div class="col d-flex justify-content-between align-items-center mt-1 mb-3">
+            <div>
+                <h1>@Model.Name</h1>
+            </div>
+            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                <a class="btn btn-primary" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to list"><i class="bi bi-arrow-left"></i></a>
+            </div>
+        </div>
+    </div>
 
-<h4>UserEditVM</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    <form id="editUserForm" asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="container px-0">
+            <div class="row py-2">
+                <div class="col">
+                    <div class="form-group d-flex flex-column">
+                        <input asp-for="Name" class="form-control" placeholder="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+            <div class="row py-2">
+                <div class="col">
+                    <div class="form-group d-flex flex-column">
+                        <input asp-for="Username" class="form-control" placeholder="Username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" type="password"/>
-                <span asp-validation-for="Password" class="text-danger"></span>
+            <div class="row py-2">
+                <div class="col">
+                    <div class="form-group d-flex flex-column">
+                        <input asp-for="Email" class="form-control" placeholder="Email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+            <div class="row py-2">
+                <div class="col">
+                    <div class="form-group d-flex flex-column">
+                        <input asp-for="Password" class="form-control" placeholder="Password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="RoleId" class="control-label"></label>
-                <select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId"></select>
-                <span asp-validation-for="RoleId" class="text-danger"></span>
+            <div class="row py-2">
+                <div class="col">
+                    <div class="form-group d-flex flex-column">
+                        <select asp-for="RoleId" class="form-control" title="Role" asp-items="ViewBag.RoleId"></select>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+        <button type="button" class="btn btn-success px-4" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit</button>
+    </form>
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit @Model?.GetType().Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </form>
+            <div class="modal-body">
+                Would you like to save the changes made to '@Html.DisplayFor(model => model.Name)' @Model?.GetType().Name?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="saveChangesBtn">Save changes</button>
+            </div>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Handle form submission from the modal
+        document.getElementById("saveChangesBtn").addEventListener("click", function () {
+            document.getElementById("editUserForm").submit(); // Submit the form when "Save changes" is clicked
+        });
+    </script>
 }

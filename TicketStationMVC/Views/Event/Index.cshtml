@@ -3,66 +3,166 @@
 @{
     ViewData["Title"] = "Index";
 }
+<h3 class="display-5 my-4">Welcome, @(User.Identity.IsAuthenticated ? User.Identity.Name : "guest")</h3>
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
+            <h1>Events</h1>
+            @if (User.IsInRole("adminuser"))
+            {
+                <a class="btn btn-primary btn my-3" asp-action="Create">
+                    <i class="bi bi-plus-circle"></i> New Event
+                </a>
+            }
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <style>
+                .card > img {
+                    width: 100%;
+                    height: 20rem;
+                    object-fit: cover;
+                }
 
-<h1>Index</h1>
+                .category {
+                    border: 1px solid #0d6efd;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 20px;
+                    margin-right: 0.5rem;
+                }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateOfEvent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageURL)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Categories)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateOfEvent)
-            </td>
-            <td>
-               <img src="@Html.DisplayFor(modelItem => item.ImageURL)"/>
-            </td>
-            <td>
-                    @foreach (var cat in item.Categories)
-                    {
-                        <div>@cat </div>
-                    }
-                </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                .overlay {
+                    position: absolute;
+                    bottom: 100%;
+                    left: 0;
+                    right: 0;
+                    background-color: #008CBA;
+                    overflow: hidden;
+                    width: 100%;
+                    height: 0;
+                    transition: .5s ease;
+                }
+
+                .img-container:hover .overlay {
+                    top: 0;
+                    height: 30%;
+                }
+
+                .text {
+                    white-space: nowrap;
+                    color: white;
+                    font-size: 20px;
+                    position: absolute;
+                    overflow: hidden;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    -ms-transform: translate(-50%, -50%);
+                }
+            </style>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card h-100">
+
+                    <img src="@item.ImageURL" class="card-img-top" alt="...">
+
+                    <div class="card-body">
+
+                        <div class="d-flex flex-row justify-content-between align-content-center align-items-center">
+                            <h5 class="card-title">@item.Name</h5>
+                            <h5 class="card-title">&#8364;@item.Price</h5>
+                        </div>
+
+                        <div class="card-text">@item.DateOfEvent.ToString("dd MMMM yyyy, HH:mm tt")</div>
+
+                        <div class="d-flex justify-content-between my-2 py-1 align-items-center align-content-center">
+
+                            <div class="d-flex flex-row flex-wrap">
+                                @foreach (var cat in item.Categories)
+                                {
+                                    <div class="category mb-2">@cat</div>
+                                }
+                            </div>
+
+                            @if (item.Status)
+                            {
+                                <div>
+                                    <a class="btn btn-primary" asp-controller="Event" asp-action="AddEventToCart" asp-route-Id="@item.Id">
+                                        <i class="bi bi-cart"></i> Add to cart
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        <div>
+                            <a class="btn btn-outline-primary mb-3" style="width:100%" asp-controller="Event" asp-action="Details" asp-route-id="@item.Id">See more information</a>
+                        </div>
+
+                        @if (User.IsInRole("adminuser"))
+                        {
+                            <div class="btn-group" style="width:100%;" role="group" aria-label="Basic outlined example">
+                                <a class="btn btn-primary btn-success" asp-action="Edit" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
+                                    <i class="bi bi-pen"></i>
+                                </a>
+                                <a class="btn btn-primary btn-danger" asp-action="Delete" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @*  <div class="container align-items-strech py-2 d-flex flex-wrap flex-row justify-content-evenly ">
+
+    @foreach (var item in Model)
+    {
+    <style>
+    .card > img{
+    width: 100%;
+    height: 20rem;
+    object-fit: cover;
+    }
+    </style>
+    <div class="card my-4" style="width: calc(50% - 10rem)">
+    <img src="@item.ImageURL" class="card-img-top" alt="...">
+    <div class="card-body">
+    <div class="d-flex flex-row justify-content-between align-content-center align-items-center">
+    <h5 class="card-title">@item.Name</h5>
+    <h5 class="card-title">&#8364;@item.Price</h5>
+    </div>
+    <div class="card-text">@item.DateOfEvent.ToString("dd MMMM yyyy, hh:mm tt")</div>
+
+    <div class="d-flex justify-content-between my-2 py-1 align-items-center align-content-center">
+
+    <div class="d-flex flex-row flex-wrap ">
+    @foreach (var cat in item.Categories)
+    {
+    <style>
+    .category {
+    border: 1px solid #0d6efd;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    margin-right: 0.5rem;
+    }
+    </style>
+    <div class="category mb-2">@cat</div>
+
+    }
+    </div>
+    <div>
+    <a class="btn btn-primary" asp-controller="Event" asp-action="AddEventToCart" asp-route-eventId="@item.Id"><i class="bi bi-cart"></i> Add to cart</a>
+    </div>
+    </div>
+
+    <div class="btn-group" role="group" aria-label="Basic outlined example">
+    <a class="btn btn-primary btn-success" asp-action="Edit" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"><i class="bi bi-pen"></i></a>
+    <a class="btn btn-primary btn-danger" asp-action="Delete" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i class="bi bi-trash"></i></a>
+    </div>
+    </div>
+    </div>
+    }
+    </div> *@
+</div>

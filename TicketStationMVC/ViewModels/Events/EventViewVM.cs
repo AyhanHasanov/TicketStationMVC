@@ -15,6 +15,7 @@ namespace TicketStationMVC.ViewModels.Events
 
         public string ImageURL { get; set; }
 
+        public bool Status { get; set; }
         public virtual ICollection<string> Categories { get; set; }
     }
 }

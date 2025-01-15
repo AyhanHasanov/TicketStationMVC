@@ -2,7 +2,7 @@
 
 namespace TicketStationMVC.Data.Entities
 {
-    public class CartItem : BaseEntity
+    public class CartItem
     {
         [Key]
         public int Id { get; set; }

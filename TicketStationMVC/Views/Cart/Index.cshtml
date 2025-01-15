@@ -4,18 +4,51 @@
     ViewData["Title"] = "Index";
 }
 
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
+            <h1>My Cart</h1>
+        </div>
 
-@if (Model.Items.Count() > 0)
-{
-    @foreach (var i in Model.Items)
-    {
-        <img src=@i.ImageUrl>
-        <p>@i.Name</p>
-        <p>@i.Price</p>
-        <a class="quantity-button" asp-action="DecreaseQuantity" asp-route-cartItemId="@i.Id">-</a>
-        <p>@i.Quantity</p>
-        <a class="quantity-button" asp-action="IncreaseQuantity" asp-route-cartItemId="@i.Id">+</a>
-        <a class="link-button" asp-action="RemoveEvent" asp-route-cartItemId="@i.Id">Remove</a>
-    }
-    <p>@ViewBag.Total</p>
-}
+    </div>
+    <div class="container border border-1 rounded">
+        <div class="row align-items-center justify-content-between py-2 border-bottom border-1 fw-bold">
+            <div class="col"></div>
+            <div class="col">Name</div>
+            <div class="col-2">Price</div>
+            <div class="col-1">Quantity</div>
+            <div class="col-2">Subtotal</div>
+            <div class="col-1"></div>
+        </div>
+        @foreach (var item in Model.Items)
+        {
+            <div class="row align-items-center justify-content-between py-2 border-bottom">
+                <div class="col">
+                    <img style="width: 20rem; height: 10rem; object-fit:cover;" src="@item.ImageUrl" />
+                </div>
+                <div class="col">@Html.DisplayFor(model => item.Name)</div>
+                <div class="col-2">&#8364;@Html.DisplayFor(model => item.Price)</div>
+                <div class="col-1">
+                    <a class="quantity-button" asp-action="DecreaseQuantity" asp-route-cartItemId="@item.Id">-</a>
+                    @Html.DisplayFor(model => item.Quantity) <a class="quantity-button" asp-action="IncreaseQuantity" asp-route-cartItemId="@item.Id">+</a>
+
+                </div>
+                <div class="col-2">
+                    <span>&#8364;@(@item.Quantity * @item.Price)</span>
+                </div>
+                <div class="col-1">
+                    <a class="link-button" asp-action="RemoveEvent" asp-route-cartItemId="@item.Id">Remove</a>
+                </div>
+
+            </div>
+        }
+        <div class="row align-items-center justify-content-between py-2 border-bottom border-1 fw-bold">
+            <div class="col">Total: </div>
+            <div class="col"></div>
+            <div class="col-2"></div>
+            <div class="col-1"></div>
+            <div class="col-2"></div>
+            <div class="col-1">&#8364;@ViewBag.Total</div>
+        </div>
+    </div>
+</div>

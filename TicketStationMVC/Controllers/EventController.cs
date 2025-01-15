@@ -22,19 +22,45 @@ namespace TicketStationMVC.Controllers
     public class EventController : Controller
     {
         private readonly IEventService _eventService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
+        private readonly ICartService _cartService;
 
-        public EventController(IEventService eventService, IHttpContextAccessor httpContextAccessor, ApplicationDbContext context, IUserService userService)
+        public EventController(IEventService eventService, ApplicationDbContext context, IUserService userService, ICartService cartService)
         {
             _eventService = eventService;
-            _httpContextAccessor = httpContextAccessor;
             _context = context;
             _userService = userService;
+            _cartService = cartService;
         }
 
-        // GET: Events
+        [Authorize]
+        public async Task<IActionResult> AddEventToCart(int id, int quantity=1)
+        {
+            var user = await _userService.GetCurrentLoggedUserAsync();
+
+            if (user == null)
+                return NotFound();
+
+            await _cartService.EnsureUserHasCartAsync(user.Id);
+
+            int usersCartId = (await _cartService.GetCartByUserIdAsync(user.Id)).Id;
+            try
+            {
+                var res = await _cartService.AddItemToCartAsync(usersCartId, id, quantity);
+
+                if (res == null)
+                    return BadRequest();
+                TempData["SuccessMessage"] = "Item added successfully to your tickets";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -51,7 +77,8 @@ namespace TicketStationMVC.Controllers
                     Name = item.Name,
                     Price = item.Price,
                     DateOfEvent = item.DateOfEvent,
-                    ImageURL = item.ImageURL
+                    ImageURL = item.ImageURL,
+                    Status = item.Status
                 };
 
                 var categories = (await _eventService.GetCategoriesForEventAsync(item.Id)).Select(es => es.Name).ToList();
@@ -74,6 +101,7 @@ namespace TicketStationMVC.Controllers
 
             EventDetailedVM detailedVM = new EventDetailedVM()
             {
+                Id = id.Value,
                 Name = @event.Name,
                 Description = @event.Description,
                 Price = @event.Price,
@@ -124,7 +152,7 @@ namespace TicketStationMVC.Controllers
                 if (createEventVM == null)
                     return BadRequest();
 
-                var user = await _userService.GetUserByEmailAsync((_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value);
+                var user = await _userService.GetCurrentLoggedUserAsync();
 
                 if (user == null)
                     return BadRequest();
@@ -184,8 +212,7 @@ namespace TicketStationMVC.Controllers
             {
                 try
                 {
-                    var user = _userService.GetUserByEmailAsync((_httpContextAccessor.HttpContext.User)
-                        ?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value);
+                    var user = await _userService.GetCurrentLoggedUserAsync();
 
                     if (user == null)
                         return NotFound();
@@ -204,7 +231,7 @@ namespace TicketStationMVC.Controllers
                         }
                         eventEditVM.ImageURL = "/image/" + String.Concat(fileName, '.', extension);
                     }
-                    await _eventService.UpdateAsync(eventEditVM, user.Result.Id);
+                    await _eventService.UpdateAsync(eventEditVM, user.Id);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -229,7 +256,7 @@ namespace TicketStationMVC.Controllers
             {
                 return NotFound();
             }
-            
+
             var @event = await _eventService.GetEventByIdAsync(id.Value);
 
             EventDetailedVM detailedVM = new EventDetailedVM()

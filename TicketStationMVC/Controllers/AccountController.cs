@@ -15,12 +15,10 @@ namespace TicketStationMVC.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AccountController> _logger;
-        public AccountController(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor, ILogger<AccountController> logger, IUserService userService)
+        public AccountController(ApplicationDbContext context, ILogger<AccountController> logger, IUserService userService)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             _userService = userService;
         }
@@ -29,19 +27,12 @@ namespace TicketStationMVC.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var userClaims = _httpContextAccessor.HttpContext?.User;
-            var email = userClaims?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-
-            if (email == null)
-                return NotFound();
-
-            var user = await _userService.GetUserByEmailAsync(email);
+            var user = await _userService.GetCurrentLoggedUserAsync();
 
             if (_context.Users == null || user == null)
                 return NotFound();
 
-            var roleName =
-                (await _context.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId)).Name;
+            var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
 
             var accountVm = new AccountDetailsVM()
             {
@@ -67,13 +58,7 @@ namespace TicketStationMVC.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
-            var userClaims = _httpContextAccessor.HttpContext?.User;
-            var email = userClaims?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-
-            if (email == null)
-                return NotFound();
-
-            var user = _userService.GetUserByEmailAsync(email);
+            var user = await _userService.GetCurrentLoggedUserAsync();
 
             if (user == null)
                 return NotFound();
