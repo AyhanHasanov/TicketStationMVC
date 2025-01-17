@@ -96,11 +96,16 @@ namespace TicketStationMVC.Controllers
 
                     }
                     else
+                    {
+                        ViewData["Error message"] = "The passwords do not match!";
                         ModelState.AddModelError("", "The new passwords do not match!");
+                    }
                 }
                 else
+                {
+                    ViewData["Error message"] = "Old password is invalid!";
                     ModelState.AddModelError("", "Old password is invalid");
-
+                }
             }
             return View();
         }

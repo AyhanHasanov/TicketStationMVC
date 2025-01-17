@@ -5,6 +5,7 @@ using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
 using TicketStationMVC.Services.ServiceInterfaces;
+using TicketStationMVC.ViewModels.Cart;
 
 namespace TicketStationMVC.Services
 {
@@ -22,6 +23,27 @@ namespace TicketStationMVC.Services
             _cartRepository = repo;
         }
 
+        public async Task<ICollection<Cart>> GetAllCartsAndCartItemsAsync()
+        {
+            return await _context.Carts.Include(c => c.CartItems).ToListAsync();
+            //var allCarts = await _cartRepository.GetAllAsync();
+            //var allCartsVM = new List<CartVM>();
+            //foreach (var cart in allCarts)
+            //{
+            //    var newCartVM = new CartVM();
+            //    newCartVM.Id = cart.Id;
+            //    newCartVM.OwnerId = cart.OwnerId;
+            //    var cartItemsVM = new List<CartItemVM>();
+
+            //    foreach (var cartItem in cart.CartItems)
+            //    {
+            //        cartItemsVM.Add(new CartItemVM()
+            //        {
+            //            Id = cartItem.Id
+            //        });
+            //    }
+            //}
+        }
         public async Task<Cart?> EnsureUserHasCartAsync(int userId)
         {
             try
@@ -88,16 +110,20 @@ namespace TicketStationMVC.Services
             var item = await this.GetCartItemByIdAsync(cartItemId);
             var @event = await _eventService.GetEventByIdAsync(item.EventId);
 
-            item.Quantity -= 1;
+            if (item.Quantity - 1 == 0)
+            {
+                _context.CartItems?.Remove(item);
+                return null;
+            }
+            else
+            {
+                item.Quantity -= 1;
+                @event.Quantity += 1;
+                _context.Events?.Update(@event);
+            }
 
-            if (item.Quantity == 0)
-                _context.CartItems.Remove(item);
-
-            @event.Quantity += 1;
-            _context.Events?.Update(@event);
             _context.CartItems?.Update(item);
             await _context.SaveChangesAsync();
-
             return item;
         }
 
@@ -126,7 +152,8 @@ namespace TicketStationMVC.Services
                 {
                     CartId = cartId,
                     EventId = eventId,
-                    Quantity = quantity
+                    Quantity = quantity,
+                    AddedToCart = DateTime.Now
                 };
 
                 _context.CartItems?.Add(item);
@@ -137,6 +164,11 @@ namespace TicketStationMVC.Services
             }
 
             throw new Exception("You cannot add more than the available quantity!");
+        }
+
+        public bool DoesUserHaveCart(int userId)
+        {
+            return _context.Carts.Any(x => x.OwnerId.Equals(userId));
         }
     }
 }

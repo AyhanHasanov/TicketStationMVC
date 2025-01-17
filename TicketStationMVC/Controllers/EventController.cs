@@ -35,7 +35,7 @@ namespace TicketStationMVC.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> AddEventToCart(int id, int quantity=1)
+        public async Task<IActionResult> AddEventToCart(int id, int quantity = 1)
         {
             var user = await _userService.GetCurrentLoggedUserAsync();
 
@@ -160,8 +160,10 @@ namespace TicketStationMVC.Controllers
                 createEventVM.CreatedById = user.Id;
 
                 await _eventService.CreateAsync(createEventVM);
+                TempData["SuccessMessage"] = "Event was successfully created.";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ErrorMessage"] = "Event creation failed";
             return View();
         }
 
@@ -232,17 +234,22 @@ namespace TicketStationMVC.Controllers
                         eventEditVM.ImageURL = "/image/" + String.Concat(fileName, '.', extension);
                     }
                     await _eventService.UpdateAsync(eventEditVM, user.Id);
+                    TempData["SuccessMessage"] = "Event was updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!EventExists(eventEditVM.Id))
+                    {
+                        TempData["ErrorMessage"] = "Event was not found. Hence wasn't updated!";
                         return NotFound();
+                    }
                     else
                         throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
 
+            TempData["ErrorMessage"] = "Event update failed!";
             return View(eventEditVM);
         }
 
@@ -284,7 +291,9 @@ namespace TicketStationMVC.Controllers
             var eventToDelete = await _eventService.GetEventByIdAsync(id);
             if (eventToDelete == null)
             {
+                TempData["ErrorMessage"] = "Event was not found. Hence wasn't deleted!";
                 return NotFound();
+
             }
 
             // Get the image file path
@@ -296,7 +305,7 @@ namespace TicketStationMVC.Controllers
             }
 
             await _eventService.DeleteAsync(eventToDelete.Id);
-
+            TempData["SuccessMessage"] = "Event was deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
 

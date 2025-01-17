@@ -19,6 +19,42 @@ namespace TicketStationMVC.Controllers
             _cartService = cartService;
         }
 
+        [HttpGet]
+        [Authorize]
+        [Authorize(Roles = "adminuser")]
+        public async Task<IActionResult> AllTickets()
+        {
+            var result = new List<AllCartItemsVM>();
+            foreach (var cartCartItems in await _cartService.GetAllCartsAndCartItemsAsync())
+            {
+                var user = await _userService.GetUserByIdAsync(cartCartItems.OwnerId.Value);
+                //takes the cart part
+                var cartVM = new AllCartItemsVM();
+                cartVM.Id = cartCartItems.Id;
+                cartVM.OwnerId = cartCartItems.OwnerId;
+                cartVM.OwnerUsername = user.Username;
+                cartVM.OwnerEmail = user.Email;
+                cartVM.Items = new List<CartItemVM>();
+
+                foreach (var cartItem in cartCartItems.CartItems)
+                {
+                    Event @event = await _eventService.GetEventByIdAsync(cartItem.EventId);
+                    var cartItemVM = new CartItemVM()
+                    {
+                        Id = cartItem.Id,
+                        ImageUrl = @event.ImageURL,
+                        Name = @event.Name,
+                        Quantity = cartItem.Quantity,
+                        Price = @event.Price,
+                        AddedToCart = cartItem.AddedToCart
+                    };
+                    cartVM.Items.Add(cartItemVM);
+                }
+                result.Add(cartVM);
+            }
+            return View(result);
+        }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -46,7 +82,8 @@ namespace TicketStationMVC.Controllers
                     ImageUrl = @event.ImageURL,
                     Name = @event.Name,
                     Quantity = item.Quantity,
-                    Price = @event.Price
+                    Price = @event.Price,
+                    AddedToCart = item.AddedToCart
                 };
 
                 cartVM.Items.Add(cartItemVM);
@@ -73,6 +110,7 @@ namespace TicketStationMVC.Controllers
         public async Task<IActionResult> RemoveEvent(int cartItemId)
         {
             await _cartService.RemoveCartItemFromCartAsync(cartItemId);
+            ViewData["SuccessMessage"] = "The event was successfully removed from your cart!";
             return RedirectToAction(nameof(Index));
         }
     }

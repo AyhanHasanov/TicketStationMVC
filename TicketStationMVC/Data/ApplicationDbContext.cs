@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TicketStationMVC.Data.Entities;
+using TicketStationMVC.ViewModels.Cart;
 
 namespace TicketStationMVC.Data
 {
@@ -40,6 +41,12 @@ namespace TicketStationMVC.Data
 
             modelBuilder.Entity<EventCategories>()
                 .HasKey(ec => new { ec.EventId, ec.CategoryId });
+
+            modelBuilder.Entity<Cart>()
+        .HasOne(cart => cart.Owner) // Cart has a navigation property to User
+        .WithMany() // User does NOT have a navigation property to Cart
+        .HasForeignKey(cart => cart.OwnerId) // Foreign key in Cart
+        .OnDelete(DeleteBehavior.Cascade); // Enable cascade delete
 
 
             modelBuilder.Entity<Role>()
@@ -162,7 +169,7 @@ namespace TicketStationMVC.Data
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now,
                     Status = true
-                }, 
+                },
                 new Event()
                 {
                     Id = 2,
@@ -177,7 +184,7 @@ namespace TicketStationMVC.Data
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now,
                     Status = true
-                    
+
                 },
                 new Event()
                 {
@@ -275,5 +282,6 @@ namespace TicketStationMVC.Data
         {
             Database.EnsureCreated();
         }
+        public DbSet<TicketStationMVC.ViewModels.Cart.CartVM> CartVM { get; set; } = default!;
     }
 }

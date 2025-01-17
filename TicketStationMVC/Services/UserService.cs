@@ -4,6 +4,7 @@ using TicketStationMVC.Data;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Repositories;
 using TicketStationMVC.Services.ServiceInterfaces;
+using TicketStationMVC.ViewModels.Cart;
 using TicketStationMVC.ViewModels.User;
 
 namespace TicketStationMVC.Services
@@ -56,7 +57,33 @@ namespace TicketStationMVC.Services
 
         public async Task<User> DeleteAsync(int id)
         {
-            return await _userRepository.DeleteAsync(id);
+                return await _userRepository.DeleteAsync(id);
+        }
+        public async Task<User> DeleteUserWithCartsAndRestoreTicketsAsync(int id)
+        {
+            // Get the user with carts and cart items
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user == null)
+                throw new Exception("User not found");
+
+            var usersCart = await _context.Carts.Include(c=>c.CartItems).FirstOrDefaultAsync(x => x.OwnerId.Equals(id));
+
+            if (usersCart != null && usersCart.CartItems != null)
+                foreach (var cartItem in usersCart.CartItems)
+                {
+                    // Restore tickets
+                    var @event = await _context.Events.FirstOrDefaultAsync(x => x.Id.Equals(cartItem.EventId));
+
+                    @event.Quantity += cartItem.Quantity;
+
+                    _context.Events?.Update(@event);
+                    _context.CartItems?.Remove(cartItem);
+                }
+            await _context.SaveChangesAsync();
+
+            // Delete the user and related entities
+            return await _userRepository.DeleteAsync(user.Id);
         }
 
         public async Task<User> UpdateAsync(User user)
@@ -74,7 +101,7 @@ namespace TicketStationMVC.Services
         public async Task<User> GetCurrentLoggedUserAsync()
         {
             var emailClaim = (_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email));
-            
+
             if (emailClaim == null)
                 throw new Exception("no claims for this user");
 

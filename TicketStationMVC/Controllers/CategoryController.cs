@@ -73,8 +73,10 @@ namespace TicketStationMVC.Controllers
                 }
 
                 await _categoryService.CreateAsync(createVM);
+                TempData["SuccessMessage"] = "Category was created successfully!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ErrorMessage"] = "Category wasn't created!";
             return View(createVM);
         }
 
@@ -110,6 +112,7 @@ namespace TicketStationMVC.Controllers
         {
             if (id != categoryVM.Id)
             {
+                TempData["ErrorMessage"] = "Category not found!";
                 return NotFound();
             }
             if (ModelState.IsValid)
@@ -121,12 +124,18 @@ namespace TicketStationMVC.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!CategoryExists(categoryVM.Id))
+                    {
+                        TempData["ErrorMessage"] = "Category not found!";
                         return NotFound();
+                    }
                     else
                         throw;
                 }
+
+                TempData["SuccessMessage"] = "Category was edited successfully!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ErrorMessage"] = "Category wasn't edited!";
             return View(categoryVM);
         }
 
@@ -155,9 +164,13 @@ namespace TicketStationMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             if (_context.Categories == null || id == null)
+            {
+                TempData["ErrorMessage"] = "Category not found!";
                 return NotFound();
-
+            }
             await _categoryService.DeleteAsync(id.Value);
+
+            TempData["SuccessMessage"] = "Category was deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
 

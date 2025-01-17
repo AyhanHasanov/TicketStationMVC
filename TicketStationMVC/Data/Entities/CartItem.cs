@@ -11,5 +11,6 @@ namespace TicketStationMVC.Data.Entities
         public int Quantity { get; set; }
         public int CartId { get; set; }
         public Cart? Cart { get; set; }
+        public DateTime? AddedToCart { get; set; }
     }
 }

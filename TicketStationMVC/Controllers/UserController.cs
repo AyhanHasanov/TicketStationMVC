@@ -15,11 +15,13 @@ namespace TicketStationMVC.Controllers
         //Only the admins can create, view, edit or delete users
 
         private readonly IUserService _userService;
+        private readonly ICartService _cartService;
         private readonly ApplicationDbContext _context;
-        public UserController(IUserService userService, ApplicationDbContext context)
+        public UserController(IUserService userService, ApplicationDbContext context, ICartService cartService)
         {
             _userService = userService;
             _context = context;
+            _cartService = cartService;
         }
         [HttpGet]
         [Authorize]
@@ -94,10 +96,12 @@ namespace TicketStationMVC.Controllers
                 if ((await _userService.GetAllUsersAsync()).Any(u => u.Email.Equals(userCreateVM.Email)))
                 {
                     ModelState.AddModelError("", "There is already a user with this email.");
+                    ViewData["ErrorMessage"] = "A user with this email already exists!";
                     return View(userCreateVM);
                 }
 
                 await _userService.CreateUser(userCreateVM);
+                ViewData["SuccessMessages"] = "A new user was successfully created!";
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -134,12 +138,18 @@ namespace TicketStationMVC.Controllers
             if (ModelState.IsValid)
             {
                 if (editVm == null)
+                {
+                    TempData["ErrorMessage"] = "User not found!";
                     return NotFound();
+                }
 
                 var existingUser = await _userService.GetUserByIdAsync(editVm.Id);
 
                 if (existingUser == null)
+                {
+                    TempData["ErrorMessage"] = "User not found!";
                     return NotFound();
+                }
 
 
                 existingUser.Name = editVm.Name;
@@ -150,6 +160,8 @@ namespace TicketStationMVC.Controllers
                 existingUser.Password = editVm.Password == null ? existingUser.Password : BCrypt.Net.BCrypt.HashPassword(editVm.Password);
 
                 await _userService.UpdateAsync(existingUser);
+
+                TempData["SuccessMessage"] = "User was updated successfully!";
                 return RedirectToAction(nameof(Index));
 
             }
@@ -189,9 +201,22 @@ namespace TicketStationMVC.Controllers
             var user = await _userService.GetUserByIdAsync(userVM.Id);
 
             if (user == null)
+            {
+                ViewData["ErrorMessage"] = "User wasn't deleted!";
                 return NotFound();
+            }
 
-            await _userService.DeleteAsync(userVM.Id);
+            if (_cartService.DoesUserHaveCart(user.Id))
+            {
+                await _userService.DeleteUserWithCartsAndRestoreTicketsAsync(user.Id);
+                ViewData["SuccessMessage"] = "User was deleted successfully!";
+            }
+            else
+            {   //if user doesnt have a cart
+                await _userService.DeleteAsync(userVM.Id); 
+                ViewData["SuccessMessage"] = "User was deleted successfully!";
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }

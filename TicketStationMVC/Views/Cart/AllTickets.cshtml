@@ -1,0 +1,57 @@
+﻿@model IEnumerable<TicketStationMVC.ViewModels.Cart.AllCartItemsVM>
+
+@{
+    ViewData["Title"] = "GetAllTicketsAsync";
+}
+
+<div class="container-md my-2 custom-container">
+    <div class="row">
+        <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
+            <h1>All Tickets</h1>
+        </div>
+
+    </div>
+    <div class="container border rounded mt-4 shadow">
+        <div class="row align-items-center justify-content-between py-3 border-bottom bg-primary text-white fw-bold">
+            <div class="col">@Html.DisplayNameFor(model => model.OwnerUsername)</div>
+            <div class="col">@Html.DisplayNameFor(model => model.OwnerEmail)</div>
+        </div>
+
+        @foreach (var cart in Model)
+        {
+            <div class="row align-items-center justify-content-between py-3 bg-light border-bottom">
+                <div class="col fw-bold text-primary">@Html.DisplayFor(model => cart.OwnerUsername)</div>
+                <div class="col text-muted">@Html.DisplayFor(model => cart.OwnerEmail)</div>
+            </div>
+
+            <div class="row px-3 py-2">
+                <div class="col-12">
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Added To Cart</th>
+                                <th>Total (&#8364;)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in cart.Items)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(model => item.Name)</td>
+                                    <td>@Html.DisplayFor(model => item.Quantity)</td>
+                                    <td>&#8364;@Html.DisplayFor(model => item.Price)</td>
+                                    <td>@Html.DisplayFor(model => item.AddedToCart)</td>
+                                    <td>&#8364;@(item.Price * item.Quantity)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
