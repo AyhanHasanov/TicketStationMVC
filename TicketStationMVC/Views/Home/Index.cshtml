@@ -1,9 +1,58 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<style>
+     /* Make the carousel always take the same space */
+     #carouselExampleIndicators {
+         width: 100%; /* Full width */
+     }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome, @(User.Identity.IsAuthenticated ? User.Identity.Name : "guest")</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+         /* Style the images to fit the carousel */
+         #carouselExampleIndicators .carousel-item img {
+             width: 100rem; /* Full width */
+             height: 30rem; /* Full height of the carousel */
+             object-fit: cover; /* Ensures the image fills the space without distortion */
+             filter: brightness(0.30);
+         }
+</style>
+<div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+    <div class="carousel-inner">
+        @if (Model != null)
+        {
+            int index = 0;
+            foreach (var item in Model)
+            {
+                <div class="carousel-item @(index == 0 ? "active" : "")" data-bs-interval="4000">
+                    <img src="@item.ImageURL" class="d-block w-100" alt="@item.Name">
+                    <div class="carousel-caption d-none d-md-block text-center position-absolute translate-middle-y" style="transform: translateY(-70%) !important;">
+                        <h3>@item.Name</h3>
+                        <h4>@item.DateOfEvent</h4>
+                        <a asp-controller="Event" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">See more</a>
+                    </div>
+                </div>
+                index++;
+            }
+        }
+        else
+        {
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/1200x500" class="d-block w-100" alt="No events">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>No Events Found</h5>
+                    <p>Please check back later!</p>
+                </div>
+            </div>
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </div>
+
 

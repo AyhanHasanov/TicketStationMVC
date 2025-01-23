@@ -25,72 +25,134 @@ namespace TicketStationMVC.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
         private readonly ICartService _cartService;
+        private readonly ICategoryService _categoryService;
 
-        public EventController(IEventService eventService, ApplicationDbContext context, IUserService userService, ICartService cartService)
+        public EventController(IEventService eventService, ApplicationDbContext context, IUserService userService, ICartService cartService, ICategoryService categoryService)
         {
             _eventService = eventService;
             _context = context;
             _userService = userService;
             _cartService = cartService;
+            _categoryService = categoryService;
         }
 
         [Authorize]
         public async Task<IActionResult> AddEventToCart(int id, int quantity = 1)
         {
-            var user = await _userService.GetCurrentLoggedUserAsync();
-
-            if (user == null)
-                return NotFound();
-
-            await _cartService.EnsureUserHasCartAsync(user.Id);
-
-            int usersCartId = (await _cartService.GetCartByUserIdAsync(user.Id)).Id;
             try
             {
+                var user = await _userService.GetCurrentLoggedUserAsync();
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                await _cartService.EnsureUserHasCartAsync(user.Id);
+
+                int usersCartId = (await _cartService.GetCartByUserIdAsync(user.Id)).Id;
+
                 var res = await _cartService.AddItemToCartAsync(usersCartId, id, quantity);
 
                 if (res == null)
                     return BadRequest();
+
                 TempData["SuccessMessage"] = "Item added successfully to your tickets";
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
+
+                return RedirectToAction(nameof(Index));
 
             }
-            return RedirectToAction(nameof(Index));
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string eventFilter = "", int categoryId = -1, DateTime? startDate = null, DateTime? endDate = null)
         {
-            var items = await _eventService.GetAllEventsAsync();
+            //var items = await _eventService.GetAllEventsAsync();
 
-            var result = new List<EventViewVM>();
+            //ViewData["CategoriesID"] = new SelectList(_context.Set<Category>(), "Id", "Name");
 
 
-            foreach (var item in items)
+            //if (!string.IsNullOrEmpty(eventFilter))
+            //{
+            //    items = items.Where(e => e.Name.Contains(eventFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            //    ViewData["filterSearch"] = eventFilter;
+            //}
+
+            //if (categoryId != 0)
+            //{
+            //    ICollection<Event> newItems = new List<Event>();
+            //    foreach (var item in items)
+            //    {
+            //        var currEvent = await _eventService.GetCategoriesForEventAsync(item.Id);
+
+            //        if (currEvent.Any(e => e.Id.Equals(categoryId)))
+            //        {
+            //            newItems.Add(item);
+            //        }
+            //    }
+            //    items = newItems;
+            //    ViewData["selectedCategoryId"] = categoryId;
+            //}
+
+            //var result = new List<EventViewVM>();
+
+            //foreach (var item in items)
+            //{
+            //    var current = new EventViewVM()
+            //    {
+            //        Id = item.Id,
+            //        Name = item.Name,
+            //        Price = item.Price,
+            //        DateOfEvent = item.DateOfEvent,
+            //        ImageURL = item.ImageURL,
+            //        Status = item.Status
+            //    };
+
+            //    var categories = (await _eventService.GetCategoriesForEventAsync(item.Id)).Select(es => es.Name).ToList();
+
+            //    current.Categories = categories;
+
+            //    result.Add(current);
+            //}
+            ViewData["CategoriesID"] = new SelectList(_context.Set<Category>(), "Id", "Name");
+
+            var result = await GetFilteredEvents(eventFilter, categoryId, startDate, endDate);
+            if(startDate.HasValue)
+                ViewData["startDate"] = startDate.Value.ToString("yyyy-MM-dd");
+            if(endDate.HasValue)
+                ViewData["endDate"] = endDate.Value.ToString("yyyy-MM-dd");
+
+            try
             {
-                var current = new EventViewVM()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Price = item.Price,
-                    DateOfEvent = item.DateOfEvent,
-                    ImageURL = item.ImageURL,
-                    Status = item.Status
-                };
-
-                var categories = (await _eventService.GetCategoriesForEventAsync(item.Id)).Select(es => es.Name).ToList();
-
-                current.Categories = categories;
-
-                result.Add(current);
+                if (categoryId > 0)
+                    ViewData["selectedCategoryName"] = (await _categoryService.GetCategoryByIdAsync(categoryId)).Name;
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Category doesn't exist";
             }
 
+            ViewData["selectedCategoryId"] = categoryId;
+            ViewData["filterSearch"] = eventFilter;
             return View(result);
         }
+        [HttpGet]
+        [Authorize(Roles = "adminuser")]
+        public async Task<IActionResult> EventCRUD(string eventFilter = "", int categoryId = 0)
+        {
+            ViewData["CategoriesID"] = new SelectList(_context.Set<Category>(), "Id", "Name");
+            var res = await GetFilteredEvents(eventFilter, categoryId);
 
+            if (categoryId > 0)
+                ViewData["selectedCategoryId"] = (await _categoryService.GetCategoryByIdAsync(categoryId)).Name;
+
+            ViewData["filterSearch"] = eventFilter;
+            return View(res);
+        }
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
@@ -117,7 +179,6 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Create()
         {
@@ -126,7 +187,6 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] EventCreateVM createEventVM, IFormFile? imageFile)
@@ -168,7 +228,6 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -200,7 +259,6 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [FromForm] EventEditVM eventEditVM, IFormFile? imageFile)
@@ -255,7 +313,6 @@ namespace TicketStationMVC.Controllers
 
         // GET: Events/Delete/5
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -283,7 +340,6 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -312,6 +368,66 @@ namespace TicketStationMVC.Controllers
         private bool EventExists(int id)
         {
             return (_context.Events?.Any(e => e.Id.Equals(id))).GetValueOrDefault();
+        }
+
+        private async Task<List<EventViewVM>> GetFilteredEvents(string eventFilter, int categoryId, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var items = await _eventService.GetAllEventsAsync();
+
+            if (!string.IsNullOrEmpty(eventFilter))
+            {
+                items = items.Where(e => e.Name.Contains(eventFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (categoryId > 0)
+            {
+                ICollection<Event> newItems = new List<Event>();
+                foreach (var item in items)
+                {
+                    var currEvent = await _eventService.GetCategoriesForEventAsync(item.Id);
+
+                    if (currEvent.Any(e => e.Id.Equals(categoryId)))
+                    {
+                        newItems.Add(item);
+                    }
+                }
+                items = newItems;
+            }
+
+            if (startDate.HasValue)
+            {
+                items = items.Where(e => e.DateOfEvent >= startDate.Value).ToList();
+                ViewData["startDate"] = startDate.Value.ToString("dd.MM.yyyy");
+            }
+
+            if (endDate.HasValue)
+            {
+                items = items.Where(e => e.DateOfEvent <= endDate.Value).ToList();
+                ViewData["endDate"] = endDate.Value.ToString("dd.MM.yyyy");
+            }
+
+            var result = new List<EventViewVM>();
+
+            foreach (var item in items)
+            {
+                var current = new EventViewVM()
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Price = item.Price,
+                    DateOfEvent = item.DateOfEvent,
+                    ImageURL = item.ImageURL,
+                    Status = item.Status
+                };
+
+                var categories = (await _eventService.GetCategoriesForEventAsync(item.Id)).Select(es => es.Name).ToList();
+
+                current.Categories = categories;
+
+                result.Add(current);
+            }
+
+            return result;
         }
     }
 }

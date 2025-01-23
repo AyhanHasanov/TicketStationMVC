@@ -13,17 +13,18 @@ namespace TicketStationMVC.Controllers
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CategoryController> _logger;
         private readonly ICategoryService _categoryService;
 
-        public CategoryController(ApplicationDbContext context, ICategoryService service)
+        public CategoryController(ApplicationDbContext context, ICategoryService service, ILogger<CategoryController> logger)
         {
             _context = context;
             _categoryService = service;
+            _logger = logger;
         }
 
         // GET: CategoryController
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Index()
         {
@@ -33,24 +34,34 @@ namespace TicketStationMVC.Controllers
 
         // GET: CategoryController/Details/5
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Categories == null)
-                return NotFound();
+            try
+            {
+                if (id == null || _context.Categories == null)
+                {
+                    return NotFound();
+                }
 
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+                var category = await _categoryService.GetCategoryByIdAsync(id.Value);
 
-            if (category == null)
-                return NotFound();
+                if (category == null)
+                {
+                    return NotFound();
+                }
 
-            return View(category);
+                return View(category);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Details[Get] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         // GET: CategoryController/Create
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public ActionResult Create()
         {
@@ -59,13 +70,18 @@ namespace TicketStationMVC.Controllers
 
         // POST: CategoryController/Create
         [HttpPost]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryVM createVM)
         {
-            if (ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    TempData["ErrorMessage"] = "Category wasn't created!";
+                    return View(createVM);
+                }
+
                 if ((await _categoryService.GetAllCategoriesAsync()).Any(c => c.Name.ToLower().Equals(createVM.Name.ToLower())))
                 {
                     ModelState.AddModelError("", "This ctageory already exists!");
@@ -76,13 +92,15 @@ namespace TicketStationMVC.Controllers
                 TempData["SuccessMessage"] = "Category was created successfully!";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["ErrorMessage"] = "Category wasn't created!";
-            return View(createVM);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Details[Get] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         // GET: CategoryController/Edit/5
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -105,73 +123,91 @@ namespace TicketStationMVC.Controllers
 
         // POST: CategoryController/Edit/5
         [HttpPost]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, CategoryVM categoryVM)
         {
-            if (id != categoryVM.Id)
+            try
             {
-                TempData["ErrorMessage"] = "Category not found!";
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                try
+                if (!ModelState.IsValid)
                 {
-                    await _categoryService.UpdateAsync(categoryVM);
+                    TempData["ErrorMessage"] = "Category wasn't edited!";
+                    return View(categoryVM);
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (id != categoryVM.Id)
                 {
-                    if (!CategoryExists(categoryVM.Id))
-                    {
-                        TempData["ErrorMessage"] = "Category not found!";
-                        return NotFound();
-                    }
-                    else
-                        throw;
+                    return NotFound();
                 }
+
+                await _categoryService.UpdateAsync(categoryVM);
 
                 TempData["SuccessMessage"] = "Category was edited successfully!";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["ErrorMessage"] = "Category wasn't edited!";
-            return View(categoryVM);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CategoryExists(categoryVM.Id))
+                {
+                    return NotFound();
+                }
+                else
+                    throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Edit[Post] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         // GET: CategoryController/Delete/5
         [HttpGet]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Categories == null)
-                return NotFound();
+            try
+            {
+                if (id == null || _context.Categories == null)
+                    return NotFound();
 
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+                var category = await _categoryService.GetCategoryByIdAsync(id.Value);
 
-            if (category == null)
-                return NotFound();
+                if (category == null)
+                    return NotFound();
 
-            return View(category);
+                return View(category);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Delete[Get] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         // POST: CategoryController/Delete/5
         [HttpPost, ActionName("Delete")]
-        [Authorize]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            if (_context.Categories == null || id == null)
+            try
             {
-                TempData["ErrorMessage"] = "Category not found!";
-                return NotFound();
-            }
-            await _categoryService.DeleteAsync(id.Value);
+                if (_context.Categories == null || id == null)
+                {
+                    return NotFound();
+                }
 
-            TempData["SuccessMessage"] = "Category was deleted successfully!";
-            return RedirectToAction(nameof(Index));
+                await _categoryService.DeleteAsync(id.Value);
+
+                TempData["SuccessMessage"] = "Category was deleted successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Details[Get] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         private bool CategoryExists(int id)

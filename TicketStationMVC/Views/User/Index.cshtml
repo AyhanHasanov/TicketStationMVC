@@ -5,13 +5,31 @@
 }
 
 <div class="container-md my-2 custom-container">
-    <div class="row">
-        <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
+    <div class="row mt-5 mb-3">
+        <div class="col d-flex justify-content-between align-items-center">
             <h1>Users</h1>
             <a class="btn btn-primary btn my-3" asp-action="Create">
                 <i class="bi bi-plus-circle"></i> New User
             </a>
         </div>
+    </div> 
+    <div class="row mt-3 mb-3">
+        <form method="get" class="d-flex justify-content-between align-items-end">
+            <div class="form-group flex-grow-1 me-4">
+                <label for="filter" class="text-muted">Search for user:</label>
+                <input type="text" id="filter" name="usernameFilter" class="form-control" value="@ViewBag.usernameVD" placeholder="Enter user's username" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-secondary" />
+            </div>
+        </form>
+        <a asp-controller="User" asp-action="Index" asp-route-usernameFilter="">Clear filtering</a>
+        @if (ViewBag.usernameVD != null)
+        {
+            <p class="fs-3 my-3">Showing results for username: <b>@ViewBag.usernameVD</b></p>
+        }
+    </div>
+    <div class="row mt-3 mb-3">
         <div class="container border border-1 rounded">
             <div class="row align-items-center py-2 border-bottom border-1 fw-bold">
                 <div class="col">@Html.DisplayNameFor(model => model.Name)</div>
@@ -38,4 +56,5 @@
             }
         </div>
     </div>
+    
 </div>

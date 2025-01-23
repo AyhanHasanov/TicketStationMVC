@@ -3,166 +3,151 @@
 @{
     ViewData["Title"] = "Index";
 }
-<h3 class="display-5 my-4">Welcome, @(User.Identity.IsAuthenticated ? User.Identity.Name : "guest")</h3>
-<div class="container-md my-2 custom-container">
-    <div class="row">
-        <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
-            <h1>Events</h1>
-            @if (User.IsInRole("adminuser"))
-            {
-                <a class="btn btn-primary btn my-3" asp-action="Create">
-                    <i class="bi bi-plus-circle"></i> New Event
-                </a>
-            }
-        </div>
+<div class="container-fluid p-0">
+    <style>
+        #event-hero {
+            background-image: url('/image/pexels-thumb.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            height: 45vh;
+            margin-bottom: 0;
+        }
+
+    </style>
+    <div id="event-hero" class="col d-flex justify-content-center align-items-center text-light">
+        <h1 class="custom-heading text-center">Book it. Feel it. Enjoy it.</h1>
     </div>
-    <div class="row">
-        @foreach (var item in Model)
+</div>
+<div class="container-fluid p-0">
+    <form method="get" class="bg-primary shadow d-flex justify-content-center align-items-end mb-3 py-4 px-5">
+        <div class="form-group ms-5" style="width: calc(8.18% * 3);">
+            <label class="text-light" for="filter">Title: </label>
+            <input type="text" id="filter" name="eventFilter" class="form-control rounded-0 rounded-start" value="@ViewData["filterSearch"]" />
+        </div>
+        <div class="form-group" style="width: calc(8.18% * 2);">
+            <label class="text-light" for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" class="form-control rounded-0" value="@ViewData["startDate"]" />
+        </div>
+
+        <div class="form-group" style="width: calc(8.18% * 2);">
+            <label class="text-light" for="endDate">End Date:</label>
+            <input type="date" id="endDate" name="endDate" class="form-control rounded-0" value="@ViewData["endDate"]" />
+        </div>
+        <div class="form-group" style="width: calc(8.18% * 3);">
+            <label class="control-label text-muted"></label>
+            <select class="form-control rounded-0" name="categoryId" asp-items="ViewBag.CategoriesID">
+                <option value="-1">Select category: </option>
+            </select>
+        </div>
+        <div class="form-group" style="width: calc(8.18% * 1);">
+            <input type="submit" value="Search" class="btn btn-warning rounded-0 rounded-end me-5" />
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <div class="row justify-content-between">
+
+        @if (!string.IsNullOrEmpty(ViewBag.filterSearch) && ViewBag.selectedCategoryId <= 0)
         {
-            <style>
-                .card > img {
-                    width: 100%;
-                    height: 20rem;
-                    object-fit: cover;
+            <span>1Showing result for: "@ViewBag.filterSearch"</span>
+
+        }
+        @if (ViewBag.selectedCategoryId > 0 && string.IsNullOrEmpty(ViewBag.filterSearch))
+        {
+            <span>2Showing results for category: "@ViewBag.selectedCategoryName"</span>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.filterSearch) && ViewBag.selectedCategoryId > 0)
+        {
+            <span>3Showing result for: "@ViewBag.filterSearch" and category: "@ViewBag.selectedCategoryName"</span>
+        }
+
+        <style>
+            .custom-card {
+                position: relative;
+                width: 26rem;
+                box-shadow: 0px 0px 20px rgb(0, 0, 0, 0.15);
+            }
+
+            .img-cont > img {
+                display: block;
+                width: 100%;
+                height: 20rem;
+                object-fit: cover;
+                border-radius: 6px;
+            }
+
+            .card-info-cont {
+                position: absolute;
+                bottom: 0;
+                left: 100%;
+                right: 0;
+                background-color: rgb(0, 0, 0, 0.7);
+                overflow: hidden;
+                width: 0;
+                height: 100%;
+                transition: .3s ease;
+                display: flex;
+                justify-content: space-between;
+                align-items: stretch;
+                opacity: 0;
+                overflow-wrap: normal;
+                border-radius: 6px;
+            }
+
+                .card-info-cont .arrow-cont {
+                    background-color: rgba(158, 197, 254, 0.3)
                 }
 
-                .category {
-                    border: 1px solid #0d6efd;
-                    padding: 0.25rem 0.75rem;
-                    border-radius: 20px;
-                    margin-right: 0.5rem;
+            .custom-card:hover .card-info-cont {
+                width: 100%;
+                left: 50%;
+                opacity: 100%;
+                overflow-wrap: break-word;
+            }
+
+            .custom-card .card-info-cont {
+                color: white;
+                font-size: 20px;
+                position: absolute;
+                top: 50%;
+                /* left: 50%; */
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+            }
+
+                .custom-card .card-info-cont .card-info-inner {
+                    max-width: 70% !important;
                 }
+        </style>
 
-                .overlay {
-                    position: absolute;
-                    bottom: 100%;
-                    left: 0;
-                    right: 0;
-                    background-color: #008CBA;
-                    overflow: hidden;
-                    width: 100%;
-                    height: 0;
-                    transition: .5s ease;
-                }
 
-                .img-container:hover .overlay {
-                    top: 0;
-                    height: 30%;
-                }
-
-                .text {
-                    white-space: nowrap;
-                    color: white;
-                    font-size: 20px;
-                    position: absolute;
-                    overflow: hidden;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    -ms-transform: translate(-50%, -50%);
-                }
-            </style>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card h-100">
-
-                    <img src="@item.ImageURL" class="card-img-top" alt="...">
-
-                    <div class="card-body">
-
-                        <div class="d-flex flex-row justify-content-between align-content-center align-items-center">
-                            <h5 class="card-title">@item.Name</h5>
-                            <h5 class="card-title">&#8364;@item.Price</h5>
-                        </div>
-
-                        <div class="card-text">@item.DateOfEvent.ToString("dd MMMM yyyy, HH:mm tt")</div>
-
-                        <div class="d-flex justify-content-between my-2 py-1 align-items-center align-content-center">
-
-                            <div class="d-flex flex-row flex-wrap">
-                                @foreach (var cat in item.Categories)
-                                {
-                                    <div class="category mb-2">@cat</div>
-                                }
-                            </div>
-
-                            @if (item.Status)
+        @foreach (var item in Model.Where(x => x.Status))
+        {
+            <div class="custom-card p-0 mb-4">
+                <div class="img-cont">
+                    <img src="@item.ImageURL" alt="">
+                </div>
+                <div class="card-info-cont">
+                    <div class="card-info-inner mx-3 my-4 d-flex flex-column justify-content-center">
+                        <h6 class="card-category mb-2">
+                            @foreach (var category in item.Categories)
                             {
-                                <div>
-                                    <a class="btn btn-primary" asp-controller="Event" asp-action="AddEventToCart" asp-route-Id="@item.Id">
-                                        <i class="bi bi-cart"></i> Add to cart
-                                    </a>
-                                </div>
+                                <span class="badge text-uppercase bg-primary fw-normal px-2 py-1 me-2">@category </span>
                             }
-                        </div>
-                        <div>
-                            <a class="btn btn-outline-primary mb-3" style="width:100%" asp-controller="Event" asp-action="Details" asp-route-id="@item.Id">See more information</a>
-                        </div>
-
-                        @if (User.IsInRole("adminuser"))
-                        {
-                            <div class="btn-group" style="width:100%;" role="group" aria-label="Basic outlined example">
-                                <a class="btn btn-primary btn-success" asp-action="Edit" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
-                                    <i class="bi bi-pen"></i>
-                                </a>
-                                <a class="btn btn-primary btn-danger" asp-action="Delete" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        }
+                        </h6>
+                        <h5 class="card-title my-2" style="text-wrap-mode:wrap;">@item.Name</h5>
+                        <p class="card-text fs-6">@item.DateOfEvent.ToString("dd.MM.yyyy")</p>
+                        <p class="card-price" style="margin:0px;">&#8364;@item.Price</p>
+                    </div>
+                    <div class="arrow-cont px-3 d-flex align-items-center">
+                        <a class="text-white" asp-controller="Event" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-caret-right-fill"></i></a>
                     </div>
                 </div>
             </div>
         }
     </div>
-
-    @*  <div class="container align-items-strech py-2 d-flex flex-wrap flex-row justify-content-evenly ">
-
-    @foreach (var item in Model)
-    {
-    <style>
-    .card > img{
-    width: 100%;
-    height: 20rem;
-    object-fit: cover;
-    }
-    </style>
-    <div class="card my-4" style="width: calc(50% - 10rem)">
-    <img src="@item.ImageURL" class="card-img-top" alt="...">
-    <div class="card-body">
-    <div class="d-flex flex-row justify-content-between align-content-center align-items-center">
-    <h5 class="card-title">@item.Name</h5>
-    <h5 class="card-title">&#8364;@item.Price</h5>
-    </div>
-    <div class="card-text">@item.DateOfEvent.ToString("dd MMMM yyyy, hh:mm tt")</div>
-
-    <div class="d-flex justify-content-between my-2 py-1 align-items-center align-content-center">
-
-    <div class="d-flex flex-row flex-wrap ">
-    @foreach (var cat in item.Categories)
-    {
-    <style>
-    .category {
-    border: 1px solid #0d6efd;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    margin-right: 0.5rem;
-    }
-    </style>
-    <div class="category mb-2">@cat</div>
-
-    }
-    </div>
-    <div>
-    <a class="btn btn-primary" asp-controller="Event" asp-action="AddEventToCart" asp-route-eventId="@item.Id"><i class="bi bi-cart"></i> Add to cart</a>
-    </div>
-    </div>
-
-    <div class="btn-group" role="group" aria-label="Basic outlined example">
-    <a class="btn btn-primary btn-success" asp-action="Edit" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"><i class="bi bi-pen"></i></a>
-    <a class="btn btn-primary btn-danger" asp-action="Delete" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i class="bi bi-trash"></i></a>
-    </div>
-    </div>
-    </div>
-    }
-    </div> *@
 </div>

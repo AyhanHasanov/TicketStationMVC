@@ -27,24 +27,33 @@ namespace TicketStationMVC.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var user = await _userService.GetCurrentLoggedUserAsync();
-
-            if (_context.Users == null || user == null)
-                return NotFound();
-
-            var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
-
-            var accountVm = new AccountDetailsVM()
+            try
             {
-                Id = user.Id,
-                Name = user.Name,
-                Username = user.Username,
-                Email = user.Email,
-                RegisteredOn = user.RegisteredOn,
-                RoleName = roleName
-            };
+                var user = await _userService.GetCurrentLoggedUserAsync();
 
-            return View(accountVm);
+                if (_context.Users == null || user == null)
+                {
+                    return NotFound();
+                }
+                var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
+
+                var accountVm = new AccountDetailsVM()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Username = user.Username,
+                    Email = user.Email,
+                    RegisteredOn = user.RegisteredOn,
+                    RoleName = roleName
+                };
+
+                return View(accountVm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occured in index action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpGet]
@@ -58,28 +67,45 @@ namespace TicketStationMVC.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
-            var user = await _userService.GetCurrentLoggedUserAsync();
-
-            if (user == null)
-                return NotFound();
-
-            AccountChangePassVM vm = new AccountChangePassVM()
+            try
             {
-                Id = user.Id
-            };
+                var user = await _userService.GetCurrentLoggedUserAsync();
 
-            return View(vm);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                AccountChangePassVM vm = new AccountChangePassVM()
+                {
+                    Id = user.Id
+                };
+
+                return View(vm);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occured in change password action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> ChangePassword(AccountChangePassVM changePassVM)
         {
-            if (ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
                 var user = await _userService.GetUserByIdAsync(changePassVM.Id);
+
                 if (user == null)
+                {
                     return NotFound();
+                }
 
                 if (BCrypt.Net.BCrypt.Verify(changePassVM.OldPass, user.Password))
                 {
@@ -91,24 +117,26 @@ namespace TicketStationMVC.Controllers
                         await _userService.UpdateAsync(user);
 
                         TempData["SuccessMessage"] = "Password changed successfully.";
-
+                        _logger.LogInformation($"Password of {user.Email} was changed successfully");
                         return RedirectToAction(nameof(Index));
-
                     }
                     else
                     {
-                        ViewData["Error message"] = "The passwords do not match!";
                         ModelState.AddModelError("", "The new passwords do not match!");
+                        return View();
                     }
                 }
                 else
                 {
-                    ViewData["Error message"] = "Old password is invalid!";
                     ModelState.AddModelError("", "Old password is invalid");
+                    return View();
                 }
             }
-            return View();
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error in change password action occured: {ex.Message}");
+                return StatusCode(500);
+            }
         }
-
     }
 }

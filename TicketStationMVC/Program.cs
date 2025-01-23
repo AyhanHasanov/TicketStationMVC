@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TicketStationMVC.Data;
 using TicketStationMVC.Repositories;
 using TicketStationMVC.Services;
@@ -49,6 +50,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
     app.UseHsts();
 }
 
@@ -63,7 +65,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Event}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapDefaultControllerRoute();
 

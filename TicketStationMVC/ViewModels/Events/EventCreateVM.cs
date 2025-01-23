@@ -14,26 +14,32 @@ namespace TicketStationMVC.ViewModels.Events
         [Required]
         [MinLength(2)]
         [MaxLength(255)]
+        [Display(Name = "Name of event")]
         public string Name { get; set; }
 
         [Required]
         [MinLength(2)]
         [MaxLength(5000)]
         [DataType(DataType.Text)]
+        [Display(Name="Description")]
         public string Description { get; set; }
 
         [Required]
         [Range(0, 100000)]
+        [Display(Name = "Price (in euros)")]
         public decimal Price { get; set; }
 
         [Required]
         [Range(0, 100000)]
+        [Display(Name = "Quantity")]
         public int Quantity { get; set; }
 
         [Required]
+        [Display(Name="Date of event")]
         public DateTime DateOfEvent { get; set; }
 
         [Required]
+        [Display(Name="Status")]
         public bool Status { get; set; } // is active or passed
 
         public string? ImageURL { get; set; }

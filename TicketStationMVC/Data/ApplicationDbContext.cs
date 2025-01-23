@@ -282,6 +282,5 @@ namespace TicketStationMVC.Data
         {
             Database.EnsureCreated();
         }
-        public DbSet<TicketStationMVC.ViewModels.Cart.CartVM> CartVM { get; set; } = default!;
     }
 }

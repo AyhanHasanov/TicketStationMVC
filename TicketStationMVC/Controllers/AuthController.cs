@@ -22,6 +22,7 @@ namespace TicketStationMVC.Controllers
         {
             _logger = logger;
             _userService = userService;
+
         }
 
         [HttpGet]
@@ -37,27 +38,33 @@ namespace TicketStationMVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(UserRegistrationVM registrationVM)
         {
-            if (ModelState.IsValid)
+            try
             {
-                if ((await _userService.GetAllUsersAsync()).Any(u => u.Username.Equals(registrationVM.Username)))
+
+                if (!ModelState.IsValid)
                 {
-                    //username is taken
-                    ModelState.AddModelError("", "Username is already taken!");
-                    return View(registrationVM);
+                    return View();
                 }
-                
-                if ((await _userService.GetAllUsersAsync()).Any(u=>u.Email.Equals(registrationVM.Email)))
+
+                var existingUser = (await _userService
+                    .GetAllUsersAsync())
+                    .FirstOrDefault(u => u.Username == registrationVM.Username || u.Email == registrationVM.Email);
+
+                if (existingUser != null)
                 {
-                    //user is already registered
-                    ModelState.AddModelError("", "User is already registered with this email!");
+                    ModelState.AddModelError("", existingUser.Username == registrationVM.Username
+                        ? "Username is already taken!"
+                        : "User is already registered with this email!");
                     return View(registrationVM);
                 }
 
                 //user is not registered, register them
                 //all newly registered users are assigned ordinary user role
                 //viewmodel bc CreateUser in the service takes createviewmodel as parameter
+
                 var userVm = new UserCreateVM()
                 {
                     Name = registrationVM.Name,
@@ -70,7 +77,11 @@ namespace TicketStationMVC.Controllers
                 await _userService.CreateUser(userVm);
                 return RedirectToAction(nameof(Login));
             }
-            return View();
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Register[Post] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpGet]
@@ -83,10 +94,18 @@ namespace TicketStationMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(UserLoginVM loginVM)
         {
-            if (ModelState.IsValid)
+            try
             {
+                var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
                 if (string.IsNullOrEmpty(loginVM.Username) || string.IsNullOrEmpty(loginVM.Password))
                 {
+                    _logger.LogWarning("Login attempt failed due to missing credentials. IP: {IP}, User-Agent: {UserAgent}", ipAddress, userAgent);
                     ModelState.AddModelError("", "Username/email and password should not empty");
                     return View();
                 }
@@ -96,14 +115,9 @@ namespace TicketStationMVC.Controllers
 
                 var user = (await _userService.GetAllUsersAsync()).FirstOrDefault(u => u.Username.Equals(loginVM.Username) || u.Email.Equals(loginVM.Username));
 
-                if (user == null)
+                if (user == null || !BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password))
                 {
-                    ModelState.AddModelError("", "No accounts exists with this username/email");
-                    return View();
-                }
-
-                if (!BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password))
-                {
+                    _logger.LogWarning("Failed login attempt for {Username}. IP: {IP}, User-Agent: {UserAgent}", loginVM.Username, ipAddress, userAgent);
                     ModelState.AddModelError("", "Invalid username or password.");
                     return View();
                 }
@@ -123,7 +137,7 @@ namespace TicketStationMVC.Controllers
                 var authProperties = new AuthenticationProperties
                 {
                     AllowRefresh = true,
-                    ExpiresUtc = DateTime.UtcNow.AddMinutes(25),
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(60),
                     IsPersistent = true, //if the browser is closed the cookie is not deleted it is stored locally
                     IssuedUtc = DateTime.UtcNow
                 };
@@ -131,11 +145,15 @@ namespace TicketStationMVC.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                _logger.LogInformation("User {Email} has logged in at {Time}", user.Email, DateTime.UtcNow);
+                _logger.LogInformation($"User {user.Email} logged in successfully at {DateTime.Now}. IP: {ipAddress}, User-Agent: {userAgent}");
 
                 return RedirectToAction("Index", "Event");
             }
-            return View();
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in Register[Post] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpGet]

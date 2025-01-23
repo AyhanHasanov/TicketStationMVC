@@ -9,8 +9,17 @@
         <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
             <h1>All Tickets</h1>
         </div>
-
     </div>
+    <form method="get">
+        <div class="form-group">
+            <label for="filter">Search for user:</label>
+            <input type="text" id="filter" name="usernameFilter" class="form-control" value="@ViewData["usernameVD"]" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    </form>
+    <a asp-controller="Cart" asp-action="AllTickets" asp-route-usernameFilter="">Clear filtering</a>
     <div class="container border rounded mt-4 shadow">
         <div class="row align-items-center justify-content-between py-3 border-bottom bg-primary text-white fw-bold">
             <div class="col">@Html.DisplayNameFor(model => model.OwnerUsername)</div>

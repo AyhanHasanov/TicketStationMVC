@@ -103,7 +103,8 @@ namespace TicketStationMVC.Services
             var emailClaim = (_httpContextAccessor.HttpContext?.User)?.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email));
 
             if (emailClaim == null)
-                throw new Exception("no claims for this user");
+                return null;
+                //throw new Exception("no claims for this user");
 
             var user = await this.GetUserByEmailAsync(emailClaim.Value);
             return user;

@@ -6,10 +6,10 @@
 
 <div class="container-md my-2 custom-container">
     <div class="row">
-        <p class="lead mt-5 mb-1">Create</p>
+        <p class="lead mt-5 mb-1">Edit</p>
         <div class="col d-flex justify-content-between align-items-center mt-1 mb-3">
             <div>
-                <h1>New Event</h1>
+                <h1>@Model.Name</h1>
             </div>
             <div class="btn-group" role="group" aria-label="Basic outlined example">
                 <a class="btn btn-primary" asp-action="Index" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to list"><i class="bi bi-arrow-left"></i></a>
@@ -24,7 +24,8 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-group d-flex flex-column">
-                        <input asp-for="Name" class="form-control" placeholder="Name" />
+                        <label class="control-label text-muted" asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control"/>
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                 </div>
@@ -32,7 +33,8 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-group d-flex flex-column">
-                        <input asp-for="Description" class="form-control" placeholder="Description" />
+                        <label class="control-label text-muted" asp-for="Description"></label>
+                        <textarea asp-for="Description" class="form-control" style="height: 5rem; resize:none;"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                 </div>
@@ -40,7 +42,8 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-group d-flex flex-column">
-                        <input asp-for="Price" class="form-control" placeholder="Price &#8364;" />
+                        <label class="control-label text-muted" asp-for="Price"></label>
+                        <input asp-for="Price" class="form-control" />
                         <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
                 </div>
@@ -48,7 +51,8 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-group d-flex flex-column">
-                        <input asp-for="Quantity" class="form-control" placeholder="Quantity" />
+                        <label class="control-label text-muted" asp-for="Quantity"></label>
+                        <input asp-for="Quantity" class="form-control"/>
                         <span asp-validation-for="Quantity" class="text-danger"></span>
                     </div>
                 </div>
@@ -56,7 +60,7 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-group d-flex flex-column">
-                        <label asp-for="DateOfEvent" class="control-label"></label>
+                        <label asp-for="DateOfEvent" class="control-label text-muted"></label>
                         <input asp-for="DateOfEvent" class="form-control" />
                         <span asp-validation-for="DateOfEvent" class="text-danger"></span>
                     </div>
@@ -66,6 +70,7 @@
                 <div class="col">
                     <div class="form-group d-flex flex-column">
                         <label class="form-check-label">
+                            <label class="control-label text-muted" asp-for="Status"></label>
                             <input class="form-check-input" asp-for="Status" /> Upcoming event
                         </label>
                     </div>
@@ -83,7 +88,7 @@
             <div class="row py-2">
                 <div class="col">
                     <div class="form-group d-flex flex-column">
-                        <label for="imageFile">Image</label><br>
+                        <label for="imageFile" class="control-label text-muted">Image</label>
                         <input type="file" class="form-control" id="imageFile" name="imageFile">
                     </div>
                 </div>

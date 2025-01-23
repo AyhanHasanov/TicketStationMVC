@@ -1,0 +1,149 @@
+﻿@model IEnumerable<TicketStationMVC.ViewModels.Events.EventViewVM>
+
+@{
+    ViewData["Title"] = "000";
+}
+<div class="container">
+    <div class="container-md my-2 custom-container">
+        <div class="row">
+            <div class="col d-flex justify-content-between align-items-center mt-5 mb-3">
+                <h1>Events</h1>
+                @if (User.IsInRole("adminuser"))
+                {
+                    <a class="btn btn-primary btn my-3" asp-action="Create">
+                        <i class="bi bi-plus-circle"></i> New Event
+                    </a>
+                }
+            </div>
+        </div>
+        <form method="get">
+            <div class="form-group">
+                <label for="filter">Search for event:</label>
+                <input type="text" id="filter" name="eventFilter" class="form-control" value="@ViewData["filterSearch"]" />
+            </div>
+            <div class="form-group">
+                <label class="control-label text-muted"></label>
+                <select class="form-control" name="categoryId" asp-items="ViewBag.CategoriesID">
+                    <option value="">-- Select a category --</option>
+                    @if (ViewData["selectedCategoryId"] != null)
+                    {
+                        <option value="0" selected>
+
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </div>
+        </form>
+        <div class="row">
+            @if (ViewBag.filterSearch != null)
+            {
+                <h2>Showing result for: "@ViewBag.filterSearch"</h2>
+
+            }
+            @if (ViewBag.selectedCategoryId != null)
+            {
+                <h2>Showing result for: "@ViewBag.selectedCategoryId"</h2>
+            }
+
+            @foreach (var item in Model)
+            {
+                <style>
+                    .card > img {
+                        width: 100%;
+                        height: 20rem;
+                        object-fit: cover;
+                    }
+
+                    .category {
+                        border: 1px solid #0d6efd;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 20px;
+                        margin-right: 0.5rem;
+                    }
+
+                    .overlay {
+                        position: absolute;
+                        bottom: 100%;
+                        left: 0;
+                        right: 0;
+                        background-color: #008CBA;
+                        overflow: hidden;
+                        width: 100%;
+                        height: 0;
+                        transition: .5s ease;
+                    }
+
+                    .img-container:hover .overlay {
+                        top: 0;
+                        height: 30%;
+                    }
+
+                    .text {
+                        white-space: nowrap;
+                        color: white;
+                        font-size: 20px;
+                        position: absolute;
+                        overflow: hidden;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        -ms-transform: translate(-50%, -50%);
+                    }
+                </style>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card h-100">
+
+                        @if (!item.Status)
+                        {
+                            <img src="@item.ImageURL" class="card-img-top" style="filter:grayscale(100%);" alt="...">
+                        }
+                        else
+                        {
+                            <img src="@item.ImageURL" class="card-img-top" alt="...">
+                        }
+                        <div class="card-body">
+
+                            <div class="d-flex flex-row justify-content-between align-content-center align-items-center">
+                                <h5 class="card-title">@item.Name</h5>
+                                <h5 class="card-title">&#8364;@item.Price</h5>
+                            </div>
+
+                            <div class="card-text">@item.DateOfEvent.ToString("dd MMMM yyyy, HH:mm tt")</div>
+
+                            <div class="d-flex justify-content-between my-2 py-1 align-items-center align-content-center">
+
+                                <div class="d-flex flex-row flex-wrap">
+                                    @foreach (var cat in item.Categories)
+                                    {
+                                        <div class="category mb-2">@cat</div>
+                                    }
+                                </div>
+
+                                
+                            </div>
+                            <div>
+                                <a class="btn btn-outline-primary mb-3" style="width:100%" asp-controller="Event" asp-action="Details" asp-route-id="@item.Id">See more information</a>
+                            </div>
+
+                            @if (User.IsInRole("adminuser"))
+                            {
+                                <div class="btn-group" style="width:100%;" role="group" aria-label="Basic outlined example">
+                                    <a class="btn btn-primary btn-success" asp-action="Edit" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit">
+                                        <i class="bi bi-pen"></i>
+                                    </a>
+                                    <a class="btn btn-primary btn-danger" asp-action="Delete" asp-route-id="@item.Id" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
