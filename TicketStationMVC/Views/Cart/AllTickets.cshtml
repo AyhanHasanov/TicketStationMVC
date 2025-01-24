@@ -10,16 +10,33 @@
             <h1>All Tickets</h1>
         </div>
     </div>
-    <form method="get">
-        <div class="form-group">
-            <label for="filter">Search for user:</label>
-            <input type="text" id="filter" name="usernameFilter" class="form-control" value="@ViewData["usernameVD"]" />
+    <form method="get" class="bg-light shadow d-flex justify-content-center align-items-end mb-3 py-4 px-5">
+        <div class="form-group ms-5" style="width: calc(9.09% * 3);">
+            <label class="text-muted" for="username-filter">Username: </label>
+            <input type="text" id="username-filter" name="usernameFilter"  class="form-control rounded-0 rounded-start" value="@ViewBag.UsernameVD" />
         </div>
-        <div class="form-group">
-            <input type="submit" value="Search" class="btn btn-primary" />
+        <div class="form-group" style="width: calc(9.09% * 2);">
+            <label class="text-muted" for="email-filter">Email:</label>
+            <input type="text" id="email-filter" name="emailFilter" class="form-control rounded-0" value="@ViewBag.EmailVD" />
         </div>
+        <div class="form-group" style="width: calc(9.09% * 1);">
+            <input type="submit" value="Search" class="btn btn-warning rounded-0" style="width:100%;" />
+        </div>
+        <div class="form-group me-5" style="width: calc(9.09% * 1.15)">
+            <a class="btn btn-secondary rounded-0 rounded-end" style="width: 100%;" asp-controller="Cart" asp-action="AllTickets">Clear filtering</a>
+        </div>
+        <br />
     </form>
-    <a asp-controller="Cart" asp-action="AllTickets" asp-route-usernameFilter="">Clear filtering</a>
+    @* <form method="get">
+    <div class="form-group">
+    <label for="filter">Search for user:</label>
+    <input type="text" id="filter" name="usernameFilter" class="form-control" value="@ViewData["usernameVD"]" />
+    </div>
+    <div class="form-group">
+    <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+    </form>
+    <a asp-controller="Cart" asp-action="AllTickets" asp-route-usernameFilter="">Clear filtering</a> *@
     <div class="container border rounded mt-4 shadow">
         <div class="row align-items-center justify-content-between py-3 border-bottom bg-primary text-white fw-bold">
             <div class="col">@Html.DisplayNameFor(model => model.OwnerUsername)</div>

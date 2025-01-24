@@ -35,6 +35,7 @@ namespace TicketStationMVC.Controllers
                 {
                     return NotFound();
                 }
+
                 var roleName = (await _userService.GetRoleOfUserByIdAsync(user.Id)).Name;
 
                 var accountVm = new AccountDetailsVM()
@@ -51,16 +52,9 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An error occured in index action: {ex.Message}");
+                _logger.LogError($"An error occured in AccountController Index[get] action: {ex.Message}");
                 return StatusCode(500);
             }
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Edit()
-        {
-            return View();
         }
 
         [HttpGet]
@@ -75,6 +69,7 @@ namespace TicketStationMVC.Controllers
                 {
                     return NotFound();
                 }
+
                 AccountChangePassVM vm = new AccountChangePassVM()
                 {
                     Id = user.Id
@@ -85,7 +80,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An error occured in change password action: {ex.Message}");
+                _logger.LogError($"An error occured in AccountController ChangePassword[Get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -98,8 +93,9 @@ namespace TicketStationMVC.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest();
+                    return View();
                 }
+
                 var user = await _userService.GetUserByIdAsync(changePassVM.Id);
 
                 if (user == null)
@@ -134,7 +130,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An error in change password action occured: {ex.Message}");
+                _logger.LogError($"An error occured in AccountController ChangePassword[Get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }

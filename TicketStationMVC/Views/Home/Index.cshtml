@@ -1,19 +1,20 @@
-﻿@{
+﻿@model IEnumerable<TicketStationMVC.ViewModels.Events.EventViewVM>
+@{
     ViewData["Title"] = "Home Page";
 }
 <style>
-     /* Make the carousel always take the same space */
-     #carouselExampleIndicators {
-         width: 100%; /* Full width */
-     }
+    /* Make the carousel always take the same space */
+    #carouselExampleIndicators {
+        width: 100%; /* Full width */
+    }
 
-         /* Style the images to fit the carousel */
-         #carouselExampleIndicators .carousel-item img {
-             width: 100rem; /* Full width */
-             height: 30rem; /* Full height of the carousel */
-             object-fit: cover; /* Ensures the image fills the space without distortion */
-             filter: brightness(0.30);
-         }
+        /* Style the images to fit the carousel */
+        #carouselExampleIndicators .carousel-item img {
+            width: 100rem; /* Full width */
+            height: 30rem; /* Full height of the carousel */
+            object-fit: cover; /* Ensures the image fills the space without distortion */
+            filter: brightness(0.30);
+        }
 </style>
 <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
 
@@ -21,7 +22,7 @@
         @if (Model != null)
         {
             int index = 0;
-            foreach (var item in Model)
+            foreach (var item in Model.Where(x=>x.Status))
             {
                 <div class="carousel-item @(index == 0 ? "active" : "")" data-bs-interval="4000">
                     <img src="@item.ImageURL" class="d-block w-100" alt="@item.Name">
@@ -53,6 +54,284 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
     </button>
+</div>
+
+<style>
+</style>
+<div id="insights-container" class="container-fluid bg-light py-5 px-5 mb-3">
+    <div class="row text-center mx-5 px-3">
+        <!-- Card 1: Available Events -->
+        <div class="col-md-4 mb-4">
+            <div class="card p-4 shadow" style="min-height: 0px;">
+                <div class="display-3 fw-bold">@ViewBag.CountOfEventsVD</div>
+                <div class="small text-muted">of available events</div>
+            </div>
+        </div>
+
+        <!-- Card 2: Registered Users -->
+        <div class="col-md-4 mb-4">
+            <div class="card p-4 shadow" style="min-height: 0px;">
+                <div class="display-3 fw-bold">@ViewBag.CountOfUsersVD</div>
+                <div class="small text-muted">registered users</div>
+            </div>
+        </div>
+
+        <!-- Card 3: Total Sold Tickets -->
+        <div class="col-md-4 mb-4">
+            <div class="card p-4 shadow" style="min-height: 0px;">
+                <div class="display-3 fw-bold">@ViewBag.CountOfTicketsVD</div>
+                <div class="small text-muted">total sold tickets</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div>
+    <style>
+        /* Custom styles for the horizontal scroll */
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto; /* Enable horizontal scrolling */
+            scroll-behavior: smooth; /* Smooth scrolling effect */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+            scrollbar-width: none; /* Firefox */
+        }
+
+            .horizontal-scroll::-webkit-scrollbar {
+                display: none; /* Hide the scrollbar for WebKit browsers */
+            }
+
+            .horizontal-scroll .card {
+                flex: 0 0 auto; /* Prevent cards from shrinking or growing */
+                width: 35rem; /* Set a fixed width for each card */
+                margin-right: 1rem; /* Add spacing between cards */
+            }
+    </style>
+    <div class="container py-5">
+        <h2 class="display-5 fw-bold mb-4">Featured events</h2>
+        <div class="horizontal-scroll" id="card-slider">
+            <!-- Card 1 -->
+            <style>
+                .lead {
+                    color: #aaa;
+                }
+
+                .wrapper {
+                    margin: 10vh;
+                }
+
+                .card {
+                    border: none;
+                    transition: all 500ms cubic-bezier(0.19, 1, 0.22, 1);
+                    overflow: hidden;
+                    border-radius: 20px;
+                    min-height: 320px;
+                    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.2);
+                }
+
+                @@media (max-width: 768px) {
+                    .card {
+                        min-height: 350px;
+                    }
+                }
+
+                @@media (max-width: 420px) {
+                    .card {
+                        min-height: 300px;
+                    }
+                }
+
+                .card.card-has-bg {
+                    transition: all 500ms cubic-bezier(0.19, 1, 0.22, 1);
+                    background-size: 120%;
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                }
+
+                    .card.card-has-bg:before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        bottom: 0;
+                        left: 0;
+                        background: inherit;
+                        /* 	 -webkit-filter: grayscale(1);
+                             -moz-filter: grayscale(100%);
+                             -ms-filter: grayscale(100%);
+                             -o-filter: grayscale(100%);
+                             filter: grayscale(100%); */
+                    }
+
+                    .card.card-has-bg:hover {
+                        transform: scale(0.98);
+                        box-shadow: 0 0 5px -2px rgba(0, 0, 0, 0.3);
+                        background-size: 130%;
+                        transition: all 500ms cubic-bezier(0.19, 1, 0.22, 1);
+                    }
+
+                        .card.card-has-bg:hover .card-img-overlay {
+                            transition: all 800ms cubic-bezier(0.19, 1, 0.22, 1);
+                            background: #ffba21;
+                            background: linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 1) 100%);
+                        }
+
+                .card .card-footer {
+                    background: none;
+                    border-top: none;
+                }
+
+                    .card .card-footer .media img {
+                        border: solid 3px rgba(255, 255, 255, 0.3);
+                    }
+
+                .card .card-title {
+                    font-weight: 800;
+                }
+
+                .card .card-meta {
+                    color: rgba(0, 0, 0, 0.3);
+                    text-transform: uppercase;
+                    font-weight: 500;
+                    letter-spacing: 2px;
+                }
+
+                .card .card-body {
+                    transition: all 500ms cubic-bezier(0.19, 1, 0.22, 1);
+                }
+
+                .card:hover {
+                    cursor: pointer;
+                    transition: all 800ms cubic-bezier(0.19, 1, 0.22, 1);
+                }
+
+                    .card:hover .card-body {
+                        margin-top: 15px;
+                        transition: all 800ms cubic-bezier(0.19, 1, 0.22, 1);
+                    }
+
+                .card .card-img-overlay {
+                    transition: all 800ms cubic-bezier(0.19, 1, 0.22, 1);
+                    background: #ffba21;
+                    background: linear-gradient(0deg, rgba(100, 100, 100, 0.45) 0%, rgba(0, 14, 24, 0.9) 100%);
+                }
+            </style>
+            @foreach (var item in Model.OrderBy(x=>x.DateOfEvent).Take(6))
+            {
+                <div class="mb-4">
+                    <div class="card text-dark card-has-bg click-col"
+                         style="background-image:url('@item.ImageURL'); background-size:cover;">
+
+                        <img class="card-img d-none" src="https://source.unsplash.com/600x900/?tech,street"
+                             alt="Creative Manner Design Lorem Ipsum Sit Amet Consectetur dipisi?">
+
+                        <div class="card-img-overlay d-flex flex-column">
+                            <div class="card-body">
+                                <small class="card-meta mb-4">
+                                    @foreach (var cat in item.Categories)
+                                    {
+                                        <span class="badge bg-primary text-light">@cat</span>
+                                    }
+                                </small>
+                                <h4 class="card-title mt-4 ">
+                                    <style>
+                                        .eventName {
+                                            font-family: "League Spartan", serif;
+                                            font-optical-sizing: auto;
+                                            font-weight: 500;
+                                        }
+                                    </style>
+                                    <a class="eventName text-light" asp-controller="Event" asp-action="Details" asp-route-id="@item.Id" style="text-decoration-color:rgb(255, 255, 255, 0.5);">
+                                        @item.Name
+                                    </a>
+                                </h4>
+                                <small class="text-light">@item.DateOfEvent.ToString("dd MMMM, yyyy")</small>
+                            </div>
+                            <div class="card-footer">
+                                <div class="media d-flex flex-row justify-content-between">
+                                    <div class="media-body">
+                                        <h6 class="my-0 text-light d-block">&#8364;@item.Price</h6>
+                                        <small class="text-light">VAT INCLUDED</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('card-slider');
+        slider.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            slider.scrollLeft += event.deltaY;
+        });
+    </script>
+</div>
+
+<!-- About Us Section -->
+<section id="about-us" class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Textual Information -->
+            <div class="col-md-6">
+                <h2 class="display-5 fw-bold">About Us</h2>
+                <p class="lead">We are a dynamic team passionate about organizing seamless events and providing the best experience for attendees. With years of expertise in the industry, we specialize in event planning, ticketing solutions, and creating memorable experiences for everyone.</p>
+                <p>Our mission is to simplify the event experience for organizers and attendees alike, offering an intuitive platform for managing events and selling tickets. We believe in innovation, excellence, and creating events that leave lasting impressions.</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-lg text-success"></i> User-friendly event management tools</li>
+                    <li><i class="bi bi-check-lg text-success"></i> Seamless ticketing system</li>
+                    <li><i class="bi bi-check-lg text-success"></i> Dedicated customer support</li>
+                </ul>
+            </div>
+
+            <!-- Visual Information (Image or Icon) -->
+            <div class="col-md-6">
+                <img src="https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Event Team" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="contact-us" class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="https://images.pexels.com/photos/374074/pexels-photo-374074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Event Team" class="img-fluid rounded shadow-lg">
+        </div>
+        <div class="col-lg-6">
+            <h6 class="display-6 fs-3">Got any <span class="fw-bold">questions?</span></h6>
+            <h2 class="display-5 fw-bold">Contact Us</h2>
+
+            <form class="mt-4">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <input type="text" class="form-control" id="subject" placeholder="Enter the subject">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Tell us more:</label>
+                    <textarea class="form-control" id="message" rows="5" placeholder="Write your message here" required></textarea>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 

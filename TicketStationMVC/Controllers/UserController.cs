@@ -27,33 +27,56 @@ namespace TicketStationMVC.Controllers
 
         [HttpGet]
         [Authorize(Roles = "adminuser")]
-        public async Task<IActionResult> Index(string usernameFilter = "")
+        public async Task<IActionResult> Index(string usernameFilter = "", string emailFilter = "", int roleIdFilter = -1)
         {
-            var users = await _userService.GetAllUsersAsync();
-
-            if (!string.IsNullOrEmpty(usernameFilter))
+            try
             {
-                users = users.Where(u => u.Username.Contains(usernameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+                ViewData["RolesIdVD"] = new SelectList(_context.Set<Role>(), "Id", "Name");
 
-                ViewData["usernameVD"] = usernameFilter;
-            }
-            
+                var users = await _userService.GetAllUsersAsync();
 
-            List<UserViewVM> userViews = new List<UserViewVM>();
-            foreach (var user in users)
-            {
-                var roleName = await GetRoleNameByUserId(user.Id);
-
-                userViews.Add(new UserViewVM()
+                if (!string.IsNullOrEmpty(usernameFilter))
                 {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Name = user.Name,
-                    Email = user.Email,
-                    RoleName = roleName
-                });
+                    users = users.Where(u => u.Username.Contains(usernameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                    ViewData["UsernameVD"] = usernameFilter;
+                }
+
+                if (!string.IsNullOrEmpty(emailFilter))
+                {
+                    users = users.Where(u => u.Email.Contains(emailFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                    ViewData["EmailVD"] = emailFilter;
+                }
+
+                if (roleIdFilter > 0)
+                {
+                    users = users.Where(u => u.RoleId.Equals(roleIdFilter)).ToList();
+                    ViewData["RoleNameVD"] = (await _context.Roles.FirstOrDefaultAsync(x => x.Id == roleIdFilter)).Name;
+                }
+
+
+                List<UserViewVM> userViews = new List<UserViewVM>();
+                foreach (var user in users)
+                {
+                    var roleName = await GetRoleNameByUserId(user.Id);
+
+                    userViews.Add(new UserViewVM()
+                    {
+                        Id = user.Id,
+                        Username = user.Username,
+                        Name = user.Name,
+                        Email = user.Email,
+                        RoleName = roleName
+                    });
+                }
+                return View(userViews);
             }
-            return View(userViews);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in UserController Index action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpGet]
@@ -74,7 +97,6 @@ namespace TicketStationMVC.Controllers
 
                 var roleName = await GetRoleNameByUserId(user.Id);
 
-
                 UserDetailsVM detailsVM = new UserDetailsVM()
                 {
                     Id = user.Id,
@@ -89,7 +111,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Details action: {ex.Message}");
+                _logger.LogError($"Error occured in UserController Details[Get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -98,7 +120,7 @@ namespace TicketStationMVC.Controllers
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
+            ViewData["RoleIdVD"] = new SelectList(_context.Set<Role>(), "Id", "Name");
             return View();
         }
 
@@ -114,12 +136,11 @@ namespace TicketStationMVC.Controllers
                     return View();
                 }
 
-                ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
+                ViewData["RoleIdVD"] = new SelectList(_context.Set<Role>(), "Id", "Name");
 
                 if ((await _userService.GetAllUsersAsync()).Any(u => u.Email.Equals(userCreateVM.Email)))
                 {
                     ModelState.AddModelError("", "A user with this email already exists!.");
-                    _logger.LogWarning($"Attempt to create a user with already existing email - {userCreateVM.Email}!");
                     return View(userCreateVM);
                 }
 
@@ -130,7 +151,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Create[Post] action: {ex.Message}");
+                _logger.LogError($"Error occured in UserController Create[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -139,19 +160,34 @@ namespace TicketStationMVC.Controllers
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Edit(int id)
         {
-            ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
-            var user = await _userService.GetUserByIdAsync(id);
-
-            var userVm = new UserEditVM()
+            try
             {
-                Name = user.Name,
-                Username = user.Username,
-                Email = user.Email,
-                RoleId = user.RoleId,
-                Password = user.Password
-            };
+                if (id <= 0)
+                    return BadRequest();
 
-            return View(userVm);
+                ViewData["RoleIdVD"] = new SelectList(_context.Set<Role>(), "Id", "Name");
+
+                var user = await _userService.GetUserByIdAsync(id);
+
+                if (user == null)
+                    return NotFound();
+
+                var userVm = new UserEditVM()
+                {
+                    Name = user.Name,
+                    Username = user.Username,
+                    Email = user.Email,
+                    RoleId = user.RoleId,
+                    Password = user.Password
+                };
+
+                return View(userVm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in UserController Edit[Get] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpPost]
@@ -159,9 +195,9 @@ namespace TicketStationMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UserEditVM editVm)
         {
-            ViewData["RoleId"] = new SelectList(_context.Set<Role>(), "Id", "Name");
             try
             {
+                ViewData["RoleIdVD"] = new SelectList(_context.Set<Role>(), "Id", "Name");
                 if (!ModelState.IsValid)
                 {
                     return View(editVm);
@@ -192,7 +228,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An unexpected error occured in Edit[post] action: {ex.Message}");
+                _logger.LogError($"Error occured in UserController Edit[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
 
@@ -202,20 +238,35 @@ namespace TicketStationMVC.Controllers
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            var roleName = await GetRoleNameByUserId(user.Id);
-
-            var userVM = new UserDetailsVM()
+            try
             {
-                Id = id,
-                Name = user.Name,
-                Email = user.Email,
-                Username = user.Username,
-                RegisteredOn = user.RegisteredOn,
-                RoleName = roleName
-            };
+                if (id < 0)
+                    return BadRequest();
 
-            return View(userVM);
+                var user = await _userService.GetUserByIdAsync(id);
+
+                if (user == null)
+                    return NotFound();
+
+                var roleName = await GetRoleNameByUserId(user.Id);
+
+                var userVM = new UserDetailsVM()
+                {
+                    Id = id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Username = user.Username,
+                    RegisteredOn = user.RegisteredOn,
+                    RoleName = roleName
+                };
+
+                return View(userVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in UserController Delete[Get] action: {ex.Message}");
+                return StatusCode(500);
+            }
         }
 
         [HttpPost, ActionName("Delete")]
@@ -248,10 +299,11 @@ namespace TicketStationMVC.Controllers
 
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Delete[Post] action: {ex.Message}");
+                ViewData["ErrorMessage"] = "User wasn't deleted successfully!";
+                _logger.LogError($"Error occured in UserController Delete[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
-            
+
         }
         private async Task<string> GetRoleNameByUserId(int userId)
         {

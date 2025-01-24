@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 using TicketStationMVC.Data.Entities;
 using TicketStationMVC.Services.ServiceInterfaces;
 using TicketStationMVC.ViewModels.Cart;
@@ -23,12 +24,13 @@ namespace TicketStationMVC.Controllers
 
         [HttpGet]
         [Authorize(Roles = "adminuser")]
-        public async Task<IActionResult> AllTickets(string usernameFilter = "")
+        public async Task<IActionResult> AllTickets(string usernameFilter = "", string emailFilter = "")
         {
             try
             {
                 var result = new List<AllCartItemsVM>();
-                foreach (var cartCartItems in await _cartService.GetAllCartsAndCartItemsAsync())
+
+                foreach (var cartCartItems in (await _cartService.GetAllCartsAndCartItemsAsync()).Where(x=>x.OwnerId != null).ToList())
                 {
                     var user = await _userService.GetUserByIdAsync(cartCartItems.OwnerId.Value);
                     //takes the cart part
@@ -59,14 +61,20 @@ namespace TicketStationMVC.Controllers
                 if (!string.IsNullOrEmpty(usernameFilter))
                 {
                     result = result.Where(r => r.OwnerUsername.Contains(usernameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
-                    ViewData["usernameVD"] = usernameFilter;
+                    ViewData["UsernameVD"] = usernameFilter;
                 }
+                if (!string.IsNullOrEmpty(emailFilter))
+                {
+                    result = result.Where(r => r.OwnerEmail.Contains(emailFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    ViewData["EmailVD"] = emailFilter;
+                }
+
 
                 return View(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in AllTickets[Get] action: {ex.Message}");
+                _logger.LogError($"Error occured in CartController, AllTickets [get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -78,6 +86,12 @@ namespace TicketStationMVC.Controllers
             try
             {
                 var user = await _userService.GetCurrentLoggedUserAsync();
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
                 await _cartService.EnsureUserHasCartAsync(user.Id);
 
                 var cart = await _cartService.GetCartByUserIdAsync(user.Id);
@@ -110,13 +124,13 @@ namespace TicketStationMVC.Controllers
                 }
 
 
-            ViewData["Total"] = total;
+            ViewData["TotalVD"] = total;
 
                 return View(cartVM);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Index[Get] action: {ex.Message}");
+                _logger.LogError($"Error occured in CartController Index[Get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -127,13 +141,13 @@ namespace TicketStationMVC.Controllers
             try
             {
                 await _cartService.IncreaseQuantityOfCartItemAsync(cartItemId);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in IncreaseQuantity[post] action: {ex.Message}");
+                _logger.LogError($"Error occured in CartConrtoller IncreaseQuantity[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
-            return RedirectToAction(nameof(Index));
         }
 
         [Authorize]
@@ -142,13 +156,13 @@ namespace TicketStationMVC.Controllers
             try
             {
                 await _cartService.DecreaseQuantityOfCartItemAsync(cartItemId);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in DecreaseQuantity[post] action: {ex.Message}");
+                _logger.LogError($"Error occured in CartConrtoller DecreaseQuantity[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
-            return RedirectToAction(nameof(Index));
         }
 
         [Authorize]
@@ -157,13 +171,13 @@ namespace TicketStationMVC.Controllers
             try
             {
                 await _cartService.RemoveCartItemFromCartAsync(cartItemId);
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in RemoveEvent[post] action: {ex.Message}");
+                _logger.LogError($"Error occured in CartController RemoveEvent[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
-            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<TicketStationMVC.ViewModels.Events.EventViewVM>
 
 @{
-    ViewData["Title"] = "000";
+    ViewData["Title"] = "Dashboard - events";
 }
 <div class="container">
     <div class="container-md my-2 custom-container">
@@ -15,39 +15,37 @@
                     </a>
                 }
             </div>
+        </div><div class="container-fluid p-0">
+            <form method="get" class="bg-light shadow d-flex justify-content-center align-items-end mb-3 py-4 px-5">
+                <div class="form-group ms-5" style="width: calc(10.52% * 3);">
+                    <label class="text-dark" for="filter">Title: </label>
+                    <input type="text" id="filter" name="eventFilter" class="form-control rounded-0 rounded-start" value="@ViewData["filterSearch"]" />
+                </div>
+                <div class="form-group" style="width: calc(10.52% * 2);">
+                    <label class="text-dark" for="startDate">Start Date:</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control rounded-0" value="@ViewData["startDate"]" />
+                </div>
+
+                <div class="form-group" style="width: calc(10.52% * 2);">
+                    <label class="text-dark" for="endDate">End Date:</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control rounded-0" value="@ViewData["endDate"]" />
+                </div>
+                <div class="form-group" style="width: calc(10.52% * 2);">
+                    <label class="control-label text-dark"></label>
+                    <select class="form-control rounded-0" name="categoryId" asp-items="ViewBag.CategoriesID">
+                        <option value="-1">Select category: </option>
+                    </select>
+                </div>
+                <div class="form-group" style="width: calc(10.52% * 1);">
+                    <input type="submit" value="Search" class="btn btn-warning rounded-0 " style="width: 100%;" />
+                </div>
+                <div class="form-group me-5" style="width: calc(10.52% * 1.5)">
+                    <a class="btn btn-secondary rounded-0 rounded-end me-5" style="width: 100%;" asp-controller="Event" asp-action="IndexForAdmins">Clear filtering</a>
+                </div>
+            </form>
         </div>
-        <form method="get">
-            <div class="form-group">
-                <label for="filter">Search for event:</label>
-                <input type="text" id="filter" name="eventFilter" class="form-control" value="@ViewData["filterSearch"]" />
-            </div>
-            <div class="form-group">
-                <label class="control-label text-muted"></label>
-                <select class="form-control" name="categoryId" asp-items="ViewBag.CategoriesID">
-                    <option value="">-- Select a category --</option>
-                    @if (ViewData["selectedCategoryId"] != null)
-                    {
-                        <option value="0" selected>
 
-                        </option>
-                    }
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-primary" />
-            </div>
-        </form>
         <div class="row">
-            @if (ViewBag.filterSearch != null)
-            {
-                <h2>Showing result for: "@ViewBag.filterSearch"</h2>
-
-            }
-            @if (ViewBag.selectedCategoryId != null)
-            {
-                <h2>Showing result for: "@ViewBag.selectedCategoryId"</h2>
-            }
-
             @foreach (var item in Model)
             {
                 <style>
@@ -122,7 +120,7 @@
                                     }
                                 </div>
 
-                                
+
                             </div>
                             <div>
                                 <a class="btn btn-outline-primary mb-3" style="width:100%" asp-controller="Event" asp-action="Details" asp-route-id="@item.Id">See more information</a>

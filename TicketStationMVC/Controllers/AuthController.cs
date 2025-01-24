@@ -49,13 +49,14 @@ namespace TicketStationMVC.Controllers
                     return View();
                 }
 
-                var existingUser = (await _userService
+                var nonexistingUser = (await _userService
                     .GetAllUsersAsync())
                     .FirstOrDefault(u => u.Username == registrationVM.Username || u.Email == registrationVM.Email);
 
-                if (existingUser != null)
+                
+                if (nonexistingUser != null)
                 {
-                    ModelState.AddModelError("", existingUser.Username == registrationVM.Username
+                    ModelState.AddModelError("", nonexistingUser.Username == registrationVM.Username
                         ? "Username is already taken!"
                         : "User is already registered with this email!");
                     return View(registrationVM);
@@ -96,16 +97,13 @@ namespace TicketStationMVC.Controllers
         {
             try
             {
-                var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-                var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
-
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest();
+                    return View();
                 }
                 if (string.IsNullOrEmpty(loginVM.Username) || string.IsNullOrEmpty(loginVM.Password))
                 {
-                    _logger.LogWarning("Login attempt failed due to missing credentials. IP: {IP}, User-Agent: {UserAgent}", ipAddress, userAgent);
+                    _logger.LogWarning("Login attempt failed due to missing credentials.");
                     ModelState.AddModelError("", "Username/email and password should not empty");
                     return View();
                 }
@@ -117,10 +115,11 @@ namespace TicketStationMVC.Controllers
 
                 if (user == null || !BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password))
                 {
-                    _logger.LogWarning("Failed login attempt for {Username}. IP: {IP}, User-Agent: {UserAgent}", loginVM.Username, ipAddress, userAgent);
+                    _logger.LogWarning("Failed login attempt for {Username}.", loginVM.Username);
                     ModelState.AddModelError("", "Invalid username or password.");
                     return View();
                 }
+
                 //login successful
                 var role = await _userService.GetRoleOfUserByIdAsync(user.Id);
 
@@ -145,13 +144,12 @@ namespace TicketStationMVC.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                _logger.LogInformation($"User {user.Email} logged in successfully at {DateTime.Now}. IP: {ipAddress}, User-Agent: {userAgent}");
-
+                _logger.LogInformation($"User {user.Email} logged in successfully at {DateTime.Now}.");
                 return RedirectToAction("Index", "Event");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Register[Post] action: {ex.Message}");
+                _logger.LogError($"Error occured in AuthController Register[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
         }

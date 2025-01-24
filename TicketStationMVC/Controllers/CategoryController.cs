@@ -26,10 +26,16 @@ namespace TicketStationMVC.Controllers
         // GET: CategoryController
         [HttpGet]
         [Authorize(Roles = "adminuser")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string categoryFilter = "")
         {
-            var items = _categoryService.GetAllCategoriesAsync();
-            return View(await items);
+            var items = await _categoryService.GetAllCategoriesAsync();
+            if (!string.IsNullOrEmpty(categoryFilter))
+            {
+                items = items.Where(c => c.Name.Contains(categoryFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                ViewData["categoryFilter"] = categoryFilter;
+            }
+            return View(items);
         }
 
         // GET: CategoryController/Details/5
@@ -55,7 +61,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Details[Get] action: {ex.Message}");
+                _logger.LogError($"Error occured in CategoryController Details[Get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -94,7 +100,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Details[Get] action: {ex.Message}");
+                _logger.LogError($"Error occured in CategoryController Create[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -104,24 +110,32 @@ namespace TicketStationMVC.Controllers
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Categories == null)
-                return NotFound();
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
-
-            if (category == null)
-                return NotFound();
-
-            CategoryVM vm = new CategoryVM()
+            try
             {
-                Id = category.Id,
-                Name = category.Name
-            };
+                if (id == null || _context.Categories == null)
+                    return NotFound();
 
-            return View(vm);
+                var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+
+                if (category == null)
+                    return NotFound();
+
+                CategoryVM vm = new CategoryVM()
+                {
+                    Id = category.Id,
+                    Name = category.Name
+                };
+
+                return View(vm);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in CategoryController Edit[Get] action: {ex.Message}");
+                return BadRequest();
+            }
         }
 
-        // POST: CategoryController/Edit/5
         [HttpPost]
         [Authorize(Roles = "adminuser")]
         [ValidateAntiForgeryToken]
@@ -152,16 +166,15 @@ namespace TicketStationMVC.Controllers
                     return NotFound();
                 }
                 else
-                    throw;
+                    return StatusCode(500);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Edit[Post] action: {ex.Message}");
+                _logger.LogError($"Error occured in CategoryController Edit[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
 
-        // GET: CategoryController/Delete/5
         [HttpGet]
         [Authorize(Roles = "adminuser")]
         public async Task<IActionResult> Delete(int? id)
@@ -180,7 +193,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Delete[Get] action: {ex.Message}");
+                _logger.LogError($"Error occured in CategoryController Delete[Get] action: {ex.Message}");
                 return StatusCode(500);
             }
         }
@@ -205,7 +218,7 @@ namespace TicketStationMVC.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in Details[Get] action: {ex.Message}");
+                _logger.LogError($"Error occured in CategoryController Details[Post] action: {ex.Message}");
                 return StatusCode(500);
             }
         }

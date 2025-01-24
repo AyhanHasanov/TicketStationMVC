@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketStationMVC.Data;
 
@@ -11,9 +12,11 @@ using TicketStationMVC.Data;
 namespace TicketStationMVC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250123192135_data-ins")]
+    partial class datains
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,106 +105,106 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9562),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9564),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2797),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2799),
                             Name = "Music Concert"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9566),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9567),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2802),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2803),
                             Name = "Sport"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9568),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9570),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2805),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2807),
                             Name = "Theater"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9571),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9572),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2808),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2810),
                             Name = "Art"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9573),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9575),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2812),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2815),
                             Name = "Festival"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9576),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9577),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2817),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2818),
                             Name = "Workshop"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9579),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9580),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2820),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2824),
                             Name = "Charity"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9581),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9582),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2825),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2827),
                             Name = "Food & Drinks"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9584),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9585),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2828),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2832),
                             Name = "Trade show"
                         },
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9586),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9587),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2834),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2835),
                             Name = "Family & kids"
                         },
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9589),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9590),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2837),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2839),
                             Name = "Gaming tournament"
                         },
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9591),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9592),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2842),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2843),
                             Name = "Fashion show"
                         },
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9593),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9594),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2845),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2846),
                             Name = "Bussines networking"
                         },
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9597),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9598),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2848),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2849),
                             Name = "Health and wellness"
                         },
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9600),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9601),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2851),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2853),
                             Name = "Comedy"
                         });
                 });
@@ -262,12 +265,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9673),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2927),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 2, 27, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9665),
+                            DateOfEvent = new DateTime(2025, 2, 27, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2917),
                             Description = "A high-energy music festival featuring top rock bands from around the world. Enjoy live performances, food stalls, and exciting activities for all ages. Come for the music, stay for the unforgettable atmosphere!",
                             ImageURL = "/image/rock-music.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9674),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2928),
                             ModifiedById = 1,
                             Name = "Music Concert: \"Summer Rock Fest\"",
                             Price = 60m,
@@ -277,12 +280,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9678),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2933),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 3, 14, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9676),
+                            DateOfEvent = new DateTime(2025, 3, 14, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2931),
                             Description = "An elegant evening of dinner, live entertainment, and fundraising for a noble cause. Join us to make a difference in the lives of those in need.",
-                            ImageURL = "/image/charity.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9679),
+                            ImageURL = "/image/charity",
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2934),
                             ModifiedById = 1,
                             Name = "Charity Gala: \"Hope for Tomorrow\"",
                             Price = 100m,
@@ -292,12 +295,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9682),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2938),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 2, 7, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9681),
+                            DateOfEvent = new DateTime(2025, 2, 7, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2936),
                             Description = "Explore the great outdoors with an exhilarating mountain hike. Perfect for nature enthusiasts and adventure seekers.",
-                            ImageURL = "/image/outdoor-adventure.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9683),
+                            ImageURL = "/image/outdoor-adventure",
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2940),
                             ModifiedById = 1,
                             Name = "Outdoor Adventure: \"Mountain Hike Experience\"",
                             Price = 20m,
@@ -307,12 +310,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9687),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2944),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 3, 24, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9685),
+                            DateOfEvent = new DateTime(2025, 3, 24, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2942),
                             Description = "Join industry leaders and tech enthusiasts to discuss the latest trends in technology and innovation.",
                             ImageURL = "/image/tech-conference.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9688),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2945),
                             ModifiedById = 1,
                             Name = "Tech Conference: \"Innovators Unite 2025\"",
                             Price = 75m,
@@ -322,12 +325,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9691),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2949),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 2, 17, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9690),
+                            DateOfEvent = new DateTime(2025, 2, 17, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2947),
                             Description = "A culinary journey featuring dishes from around the world. Come hungry and explore a variety of international cuisines.",
                             ImageURL = "/image/food-festival.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9692),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2950),
                             ModifiedById = 1,
                             Name = "Food Festival: \"Taste the World\"",
                             Price = 40m,
@@ -337,12 +340,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9695),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2954),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 2, 2, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9694),
+                            DateOfEvent = new DateTime(2025, 2, 2, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2952),
                             Description = "An evening of side-splitting comedy featuring top stand-up comedians. Prepare to laugh until it hurts!",
                             ImageURL = "/image/comedy-night.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9696),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2956),
                             ModifiedById = 1,
                             Name = "Comedy Night: \"Laugh Out Loud\"",
                             Price = 50m,
@@ -352,12 +355,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9700),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2964),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 3, 4, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9698),
+                            DateOfEvent = new DateTime(2025, 3, 4, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2958),
                             Description = "Discover stunning works of art by contemporary artists. A must-visit for art lovers and collectors.",
                             ImageURL = "/image/art-exhibition.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9701),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2966),
                             ModifiedById = 1,
                             Name = "Art Exhibition: \"Modern Visions\"",
                             Price = 25m,
@@ -367,12 +370,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9705),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2971),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 4, 3, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9702),
+                            DateOfEvent = new DateTime(2025, 4, 3, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2969),
                             Description = "Compete with the best gamers in a thrilling tournament. Cash prizes and bragging rights await the victors!",
                             ImageURL = "/image/gaming-tournament.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9706),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2973),
                             ModifiedById = 1,
                             Name = "Gaming Tournament: \"Battle Royale Championship\"",
                             Price = 30m,
@@ -382,12 +385,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9854),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2977),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 2, 12, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9852),
+                            DateOfEvent = new DateTime(2025, 2, 12, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2975),
                             Description = "Learn to dance like a pro in this fun and engaging salsa workshop. No experience needed!",
                             ImageURL = "/image/dancing.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9855),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2978),
                             ModifiedById = 1,
                             Name = "Dance Workshop: \"Salsa Night\"",
                             Price = 35m,
@@ -397,12 +400,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9859),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2982),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 5, 3, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9857),
+                            DateOfEvent = new DateTime(2025, 5, 3, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2980),
                             Description = "A fun-filled day for the whole family at the adventure park. Activities for kids and adults alike.",
                             ImageURL = "/image/family.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9860),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2983),
                             ModifiedById = 1,
                             Name = "Family Fun Day: \"Adventure Park\"",
                             Price = 60m,
@@ -412,12 +415,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9863),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2988),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 4, 18, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9861),
+                            DateOfEvent = new DateTime(2025, 4, 18, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2986),
                             Description = "Join bestselling authors for an intimate evening of book readings and discussions.",
                             ImageURL = "/image/book-reading.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9864),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2989),
                             ModifiedById = 1,
                             Name = "Book Reading: \"Authors' Evening\"",
                             Price = 15m,
@@ -427,12 +430,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9867),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2993),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 2, 22, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9865),
+                            DateOfEvent = new DateTime(2025, 2, 22, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2991),
                             Description = "Connect with industry leaders and like-minded entrepreneurs at this exclusive networking event.",
                             ImageURL = "/image/bussines.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9868),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2994),
                             ModifiedById = 1,
                             Name = "Business Networking: \"Entrepreneur Meet 2025\"",
                             Price = 50m,
@@ -442,12 +445,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9871),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2998),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 3, 9, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9870),
+                            DateOfEvent = new DateTime(2025, 3, 9, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2996),
                             Description = "Recharge your mind and body with a relaxing yoga retreat in a serene location.",
-                            ImageURL = "/image/yoga.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9872),
+                            ImageURL = "yoga.jpg",
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2999),
                             ModifiedById = 1,
                             Name = "Health & Wellness: \"Yoga Retreat\"",
                             Price = 100m,
@@ -457,12 +460,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9876),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3004),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 4, 28, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9874),
+                            DateOfEvent = new DateTime(2025, 4, 28, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3002),
                             Description = "Experience the richness of culture and traditions at the annual heritage festival.",
                             ImageURL = "/image/cultural-event.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9877),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3005),
                             ModifiedById = 1,
                             Name = "Cultural Festival: \"Heritage Celebrations\"",
                             Price = 20m,
@@ -472,12 +475,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9880),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3010),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 5, 13, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9879),
+                            DateOfEvent = new DateTime(2025, 5, 13, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3008),
                             Description = "Watch the premiere of a highly anticipated indie movie, followed by a Q&A with the director.",
                             ImageURL = "/image/film-screening.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9881),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3012),
                             ModifiedById = 1,
                             Name = "Film Screening: \"Indie Movie Premiere\"",
                             Price = 25m,
@@ -487,12 +490,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9885),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3017),
                             CreatedById = 1,
-                            DateOfEvent = new DateTime(2025, 6, 2, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9883),
+                            DateOfEvent = new DateTime(2025, 6, 2, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3015),
                             Description = "A glamorous evening featuring the latest collections from top fashion designers.",
                             ImageURL = "/image/fashion.jpg",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9887),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(3018),
                             ModifiedById = 1,
                             Name = "Fashion Show: \"Style Icons 2025\"",
                             Price = 75m,
@@ -710,15 +713,15 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 5, 975, DateTimeKind.Local).AddTicks(1650),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 5, 975, DateTimeKind.Local).AddTicks(1719),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 285, DateTimeKind.Local).AddTicks(2749),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 285, DateTimeKind.Local).AddTicks(2809),
                             Name = "adminuser"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 5, 975, DateTimeKind.Local).AddTicks(1721),
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 5, 975, DateTimeKind.Local).AddTicks(1723),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 285, DateTimeKind.Local).AddTicks(2812),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 285, DateTimeKind.Local).AddTicks(2813),
                             Name = "ordinaryuser"
                         });
                 });
@@ -769,12 +772,12 @@ namespace TicketStationMVC.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(8943),
+                            CreatedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2156),
                             Email = "admin@admin.com",
-                            ModifiedAt = new DateTime(2025, 1, 23, 21, 24, 6, 94, DateTimeKind.Local).AddTicks(9011),
+                            ModifiedAt = new DateTime(2025, 1, 23, 21, 21, 35, 401, DateTimeKind.Local).AddTicks(2225),
                             Name = "Administrator",
-                            Password = "$2a$11$6QC4mECTVMfxiShHAEjrwOMcZ3O30JuPJpuX6mSXLuWUchP3PNyvq",
-                            RegisteredOn = new DateTime(2025, 1, 23, 21, 24, 5, 975, DateTimeKind.Local).AddTicks(1870),
+                            Password = "$2a$11$/G.3Q2h5UcerJaZznNQgseuQu1wQM75say3LtexLg.EYwkI63B1/u",
+                            RegisteredOn = new DateTime(2025, 1, 23, 21, 21, 35, 285, DateTimeKind.Local).AddTicks(2965),
                             RoleId = 1,
                             Username = "admin"
                         });

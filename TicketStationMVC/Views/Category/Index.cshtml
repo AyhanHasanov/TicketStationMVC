@@ -14,6 +14,18 @@
         </div>
 
     </div>
+    <form method="get" class="bg-light shadow d-flex justify-content-start align-items-end mb-3 py-4 px-5">
+        <div class="form-group ms-5" >
+            <label class="text-dark" for="categoryFilter">Name: </label>
+            <input type="text" id="categoryFilter" name="categoryFilter" class="form-control rounded-0 rounded-start" value="@ViewBag.categoryFilter" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-warning rounded-0 " style="width: 100%;" />
+        </div>
+        <div class="form-group me-5">
+            <a class="btn btn-secondary rounded-0 rounded-end me-5" style="width: 100%;" asp-controller="Category" asp-action="Index">Clear filtering</a>
+        </div>
+    </form>
     <div class="container border border-1 rounded">
         <div class="row align-items-center justify-content-between py-2 border-bottom border-1 fw-bold">
             <div class="col-6">@Html.DisplayNameFor(model => model.Name)</div>

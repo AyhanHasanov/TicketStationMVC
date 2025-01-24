@@ -4,7 +4,8 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="container-md my-2 custom-container">
+<div class="container mt-5 pt-5">
+
     <div class="row mt-5 mb-3">
         <div class="col d-flex justify-content-between align-items-center">
             <h1>Users</h1>
@@ -12,23 +13,40 @@
                 <i class="bi bi-plus-circle"></i> New User
             </a>
         </div>
-    </div> 
-    <div class="row mt-3 mb-3">
-        <form method="get" class="d-flex justify-content-between align-items-end">
-            <div class="form-group flex-grow-1 me-4">
-                <label for="filter" class="text-muted">Search for user:</label>
-                <input type="text" id="filter" name="usernameFilter" class="form-control" value="@ViewBag.usernameVD" placeholder="Enter user's username" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-secondary" />
-            </div>
-        </form>
-        <a asp-controller="User" asp-action="Index" asp-route-usernameFilter="">Clear filtering</a>
-        @if (ViewBag.usernameVD != null)
-        {
-            <p class="fs-3 my-3">Showing results for username: <b>@ViewBag.usernameVD</b></p>
-        }
     </div>
+
+    <form method="get" class="bg-light shadow d-flex justify-content-start align-items-end mb-3 py-4 px-5">
+        <div class="form-group ms-5" style="width: calc(9.09% * 3);">
+            <label class="text-muted" for="username-filter">Username: </label>
+            <input type="text" id="username-filter" name="usernameFilter" class="form-control rounded-0 rounded-start" value="@ViewBag.UsernameVD" />
+        </div>
+        <div class="form-group" style="width: calc(9.09% * 2);">
+            <label class="text-muted" for="email-filter">Email:</label>
+            <input type="text" id="email-filter" name="emailFilter" class="form-control rounded-0" value="@ViewBag.EmailVD"/>
+        </div>
+        <div class="form-group" style="width: calc(9.09% * 2);">
+            <select class="form-control rounded-0" name="roleIdFilter" asp-items="@ViewBag.RolesIdVD">
+                <option value="-1">Select category: </option>
+            </select>
+        </div>
+        <div class="form-group" style="width: calc(9.09% * 1);">
+            <input type="submit" value="Search" class="btn btn-warning rounded-0" style="width:100%;" />
+        </div>
+        <div class="form-group me-5" style="width: calc(9.09% * 1.15)">
+            <a class="btn btn-secondary rounded-0 rounded-end" style="width: 100%;" asp-controller="User" asp-action="Index">Clear filtering</a>
+        </div>
+        <br />
+    </form>
+
+    @if (!string.IsNullOrEmpty(ViewBag.UsernameVD) || !string.IsNullOrEmpty(ViewBag.EmailVD) || !string.IsNullOrEmpty(ViewBag.RoleNameVD))
+    {
+        <p class="fs-5 fw-light text-center p-2">
+            Showing results for:
+            @(!string.IsNullOrEmpty(ViewBag.UsernameVD) ? $"Username: \"{ViewBag.UsernameVD}\", " : "")
+            @(!string.IsNullOrEmpty(ViewBag.EmailVD) ? $"Email: \"{ViewBag.EmailVD}\", " : "")
+            @($"Role: {ViewBag.RoleNameVD}")
+        </p>
+    }
     <div class="row mt-3 mb-3">
         <div class="container border border-1 rounded">
             <div class="row align-items-center py-2 border-bottom border-1 fw-bold">
@@ -56,5 +74,4 @@
             }
         </div>
     </div>
-    
 </div>
