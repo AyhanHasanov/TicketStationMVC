@@ -54,9 +54,17 @@ namespace TicketStationMVC.Controllers
 
                 int usersCartId = (await _cartService.GetCartByUserIdAsync(user.Id)).Id;
 
-                if ((await _eventService.GetEventByIdAsync(id)).Quantity <= 0)
+                var @event = await _eventService.GetEventByIdAsync(id);
+
+                if (@event.Quantity <= 0)
                 {
                     TempData["ErrorMessage"] = "The item was not added to your cart. There isn't enough quantity!";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (@event.Quantity < quantity)
+                {
+                    TempData["ErrorMessage"] = "You cannot add more than the available quantity!";
                     return RedirectToAction(nameof(Index));
                 }
 

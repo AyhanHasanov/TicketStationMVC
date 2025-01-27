@@ -104,7 +104,6 @@ namespace TicketStationMVC.Services
 
             if (emailClaim == null)
                 return null;
-                //throw new Exception("no claims for this user");
 
             var user = await this.GetUserByEmailAsync(emailClaim.Value);
             return user;

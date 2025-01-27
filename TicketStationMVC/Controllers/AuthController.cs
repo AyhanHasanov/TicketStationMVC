@@ -145,7 +145,7 @@ namespace TicketStationMVC.Controllers
                     new ClaimsPrincipal(claimsIdentity), authProperties);
 
                 _logger.LogInformation($"User {user.Email} logged in successfully at {DateTime.Now}.");
-                return RedirectToAction("Index", "Event");
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {

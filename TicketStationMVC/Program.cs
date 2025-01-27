@@ -8,7 +8,6 @@ using TicketStationMVC.Services.ServiceInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
@@ -38,11 +37,11 @@ builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 
-// Apply migrations and ensure the database is created
+// To ensure the migrations are applied and the database is created
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate(); // Apply pending migrations automatically
+    dbContext.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
@@ -53,7 +52,6 @@ if (!app.Environment.IsDevelopment())
     app.UseStatusCodePagesWithReExecute("/Error/{0}");
     app.UseHsts();
 }
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
