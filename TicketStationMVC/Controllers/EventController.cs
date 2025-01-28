@@ -78,7 +78,7 @@ namespace TicketStationMVC.Controllers
                 return RedirectToAction(nameof(Index));
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
